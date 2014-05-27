@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Fusee.Engine.Imp.SFMLAudio</name>
+    </assembly>
+    <members>
+        <member name="T:Fusee.Engine.AudioStream">
+            <summary>
+            This class is the implementation for Audio playback. It uses the SFML library to handle the sound playback. 
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.AudioStream.#ctor(System.String,SFML.Audio.SoundBuffer)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.AudioStream"/> class.
+            </summary>
+            <param name="fileName">Name of the file.</param>
+            <param name="sndBuffer">The SND buffer.</param>
+        </member>
+        <member name="M:Fusee.Engine.AudioStream.#ctor(System.String,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.AudioStream"/> class.
+            </summary>
+            <param name="fileName">Name of the file.</param>
+            <param name="streaming">if set to <c>true</c> [streaming].</param>
+        </member>
+        <member name="M:Fusee.Engine.AudioStream.Dispose">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.AudioStream.Play">
+            <summary>
+            Plays this <see cref="T:Fusee.Engine.IAudioStream"/>.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.AudioStream.Play(System.Boolean)">
+            <summary>
+            Plays this <see cref="T:Fusee.Engine.IAudioStream"/>.
+            </summary>
+            <param name="loop"><c>true</c> if this <see cref="T:Fusee.Engine.IAudioStream"/> shall be looped; otherwise, <c>false</c>.</param>
+        </member>
+        <member name="M:Fusee.Engine.AudioStream.Pause">
+            <summary>
+            Pauses this <see cref="T:Fusee.Engine.IAudioStream"/>.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.AudioStream.Stop">
+            <summary>
+            Stops this <see cref="T:Fusee.Engine.IAudioStream"/>.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.AudioStream.Volume">
+            <summary>
+            Gets or sets the volume of this <see cref="T:Fusee.Engine.IAudioStream"/> (0 - 100).
+            </summary>
+            <value>
+            The volume of this <see cref="T:Fusee.Engine.IAudioStream"/> (0 - 100).
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.AudioStream.Panning">
+            <summary>
+            Gets or sets the panning of this <see cref="T:Fusee.Engine.IAudioStream"/> (-100 to +100).
+            </summary>
+            <value>
+            The panning of this <see cref="T:Fusee.Engine.IAudioStream"/> (-100 to +100).
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.AudioStream.Loop">
+            <summary>
+            Gets or sets a value indicating whether this <see cref="T:Fusee.Engine.IAudioStream"/> shall be looped.
+            </summary>
+            <value>
+            <c>true</c> if this <see cref="T:Fusee.Engine.IAudioStream"/> shall be looped; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.AudioImplementor">
+            <summary>
+            SFMLAudio Implementor class. This class is called by ImpFactory. Do not use this.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.AudioImplementor.CreateAudioImp">
+            <summary>
+            Creates the audio implementation.
+            </summary>
+            <returns>An instance of SFMLAudioImp is returned.</returns>
+        </member>
+        <member name="T:Fusee.Engine.SFMLAudioImp">
+            <summary>
+            This class is a container of all <see cref="T:Fusee.Engine.AudioStream"/> instances and regulates the properties of all Sounds.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.SFMLAudioImp.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.SFMLAudioImp"/> class.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.SFMLAudioImp.OpenDevice">
+            <summary>
+            Opens the device. All <see cref="T:Fusee.Engine.AudioStream"/> are reset. The GlobalVolume is set to 100(maximum).
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.SFMLAudioImp.CloseDevice">
+            <summary>
+            Closes the device. All <see cref="T:Fusee.Engine.AudioStream"/> instances get disposed.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.SFMLAudioImp.LoadFile(System.String,System.Boolean)">
+            <summary>
+            Loads a sound file from hard drive.
+            </summary>
+            <param name="fileName">Full path name of the file with datatype ending, e.g. "C\:sound.ogg". A path can be absolute or relative.</param>
+            <param name="streaming">if set to <c>true</c> [streaming].</param>
+            <returns>An IAudioStream instance is returned if the file path was correctly resolved.</returns>
+        </member>
+        <member name="M:Fusee.Engine.SFMLAudioImp.Stop">
+            <summary>
+            Stops the playback of all <see cref="T:Fusee.Engine.AudioStream"/> instances.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.SFMLAudioImp.SetVolume(System.Single)">
+            <summary>
+            Sets the master volume of the listener.
+            </summary>
+            <param name="val">The value (0 - 100).</param>
+        </member>
+        <member name="M:Fusee.Engine.SFMLAudioImp.GetVolume">
+            <summary>
+            Gets the master volume of the Listener.
+            </summary>
+            <returns>The volume as float with 2 digit precision.</returns>
+        </member>
+        <member name="M:Fusee.Engine.SFMLAudioImp.SetPanning(System.Single)">
+            <summary>
+            Sets the panning of all <see cref="T:Fusee.Engine.AudioStream"/> instances.
+            </summary>
+            <param name="val">The value(-100 - 100).</param>
+        </member>
+    </members>
+</doc>

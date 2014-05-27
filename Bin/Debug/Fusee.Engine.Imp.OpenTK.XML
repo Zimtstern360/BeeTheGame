@@ -1,0 +1,905 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Fusee.Engine.Imp.OpenTK</name>
+    </assembly>
+    <members>
+        <member name="T:Fusee.Engine.RenderingImplementor">
+            <summary>
+            This class is used to return the correct implementations of <see cref="T:Fusee.Engine.RenderCanvasImp"/>, <see cref="T:Fusee.Engine.RenderContextImp"/> and <see cref="T:Fusee.Engine.InputImp"/>.
+            The output depends on the underlying plattform.
+            This class is instantiated dynamically (by reflection).
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderingImplementor.CreateRenderCanvasImp">
+            <summary>
+            Creates the render canvas implementation.
+            </summary>
+            <returns>A new instance of <see cref="T:Fusee.Engine.RenderCanvasImp"/></returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderingImplementor.CreateRenderContextImp(Fusee.Engine.IRenderCanvasImp)">
+            <summary>
+            Creates the render context implementation.
+            </summary>
+            <param name="rci">The RenderCanvas implementation interface derivate.</param>
+            <returns>A new instance of <see cref="T:Fusee.Engine.RenderContextImp"/></returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderingImplementor.CreateInputImp(Fusee.Engine.IRenderCanvasImp)">
+            <summary>
+            Creates the input implementation.
+            </summary>
+            <param name="rci">The RenderCanvas implementation interface derivate.</param>
+            <returns>A new instance of <see cref="T:Fusee.Engine.InputImp"/></returns>
+        </member>
+        <member name="T:Fusee.Engine.InputImp">
+            <summary>
+            This class accesses the underlying OpenTK adapter and is the implementation of the input interface <see cref="T:Fusee.Engine.IInputImp"/>.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.InputImp._gameWindow">
+            <summary>
+            The game window where the content will be rendered to.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.#ctor(Fusee.Engine.IRenderCanvasImp)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.InputImp"/> class.
+            </summary>
+            <param name="renderCanvas">The render canvas.</param>
+            <exception cref="T:System.ArgumentNullException">renderCanvas</exception>
+            <exception cref="T:System.ArgumentException">renderCanvas must be of type RenderCanvasImp;renderCanvas</exception>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.FrameTick(System.Double)">
+            <summary>
+            Implement this to receive callbacks once a frame if your implementation needs
+            regular updates.
+            </summary>
+            <param name="time">The elapsed time since the last frame.</param>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.SetMouseToCenter">
+            <summary>
+            Sets the mouse cursor to the center of the GameWindow.
+            </summary>
+            <returns>A Point with x,y,z properties.</returns>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.SetMousePos(Fusee.Engine.Point)">
+            <summary>
+            Sets the mouse position by using X and Y values (in pixel units).
+            </summary>
+            <param name="pos">The point containing window X and Y values.</param>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.GetMousePos">
+            <summary>
+            Retrieve the position(x,y values in pixel units) of the Mouse.
+            </summary>
+            <returns>
+            The point containing window X and Y values.
+            If gamewindow is null 0,0 position is returned.
+            </returns>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.GetMouseWheelPos">
+            <summary>
+            Implement this to return the absolute mouse wheel position
+            </summary>
+            <returns>
+            The mouse wheel position.
+            </returns>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.OnGameWinMouseDown(System.Object,OpenTK.Input.MouseButtonEventArgs)">
+            <summary>
+            Called when [game win mouse down].
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="mouseArgs">The <see cref="T:OpenTK.Input.MouseButtonEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.OnGameWinMouseUp(System.Object,OpenTK.Input.MouseButtonEventArgs)">
+            <summary>
+            Called when mouse button is released.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="mouseArgs">The <see cref="T:OpenTK.Input.MouseButtonEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.OnGameWinMouseMove(System.Object,OpenTK.Input.MouseMoveEventArgs)">
+            <summary>
+            Called when mouse is moving.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="mouseArgs">The <see cref="T:OpenTK.Input.MouseMoveEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.OnGameWinKeyDown(System.Object,OpenTK.Input.KeyboardKeyEventArgs)">
+            <summary>
+            Called when mouse button is pressed down.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="key">The <see cref="T:OpenTK.Input.KeyboardKeyEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Fusee.Engine.InputImp.OnGameWinKeyUp(System.Object,OpenTK.Input.KeyboardKeyEventArgs)">
+            <summary>
+            Called when keyboard key has been released.
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="key">The <see cref="T:OpenTK.Input.KeyboardKeyEventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="P:Fusee.Engine.InputImp.CursorVisible">
+            <summary>
+            Gets or sets a value indicating whether the cursor is visible.
+            </summary>
+            <value>
+              <c>true</c> if the cursor is visible; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="E:Fusee.Engine.InputImp.MouseButtonDown">
+            <summary>
+            Trigger this event on any mouse button pressed down (and held).
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.InputImp.MouseButtonUp">
+            <summary>
+            Trigger this event on any mouse button release.
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.InputImp.MouseMove">
+            <summary>
+            Trigger this event on any mouse movement.
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.InputImp.KeyDown">
+            <summary>
+            Trigger this event once a key on the keyboard is pressed down.
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.InputImp.KeyUp">
+            <summary>
+            Trigger this event in your implementation once a key on the keyboard is released.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.Keymapper.#ctor">
+            <summary>
+            Initializes the map between KeyCodes and OpenTK.Key
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.MeshImp">
+            <summary>
+            This is the implementation of the <see cref="T:Fusee.Engine.IMeshImp"/> interface. 
+            It is used to check the status of the informations of a mesh and flush informations if required.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.MeshImp.InvalidateVertices">
+            <summary>
+            Invalidates the vertices.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.MeshImp.InvalidateNormals">
+            <summary>
+            Invalidates the normals.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.MeshImp.InvalidateColors">
+            <summary>
+            Implementation Tasks: Invalidates the colors, e.g. reset the ColorBufferObject of this instance by setting it to 0.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.MeshImp.InvalidateUVs">
+            <summary>
+            Invalidates the UV's.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.MeshImp.InvalidateTriangles">
+            <summary>
+            Invalidates the triangles.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.MeshImp.VerticesSet">
+            <summary>
+            Gets a value indicating whether [vertices set].
+            </summary>
+            <value>
+              <c>true</c> if [vertices set]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.MeshImp.NormalsSet">
+            <summary>
+            Gets a value indicating whether [normals set].
+            </summary>
+            <value>
+              <c>true</c> if [normals set]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.MeshImp.ColorsSet">
+            <summary>
+            Gets a value indicating whether [colors set].
+            </summary>
+            <value>
+              <c>true</c> if [colors set]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.MeshImp.UVsSet">
+            <summary>
+            Gets a value indicating whether [u vs set].
+            </summary>
+            <value>
+              <c>true</c> if [u vs set]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.MeshImp.TrianglesSet">
+            <summary>
+            Gets a value indicating whether [triangles set].
+            </summary>
+            <value>
+              <c>true</c> if [triangles set]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.RenderContextImp">
+            <summary>
+            Implementation of the <see cref="T:Fusee.Engine.IRenderContextImp"/> interface for usage with OpenTK framework.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.#ctor(Fusee.Engine.IRenderCanvasImp)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.RenderContextImp"/> class.
+            </summary>
+            <param name="renderCanvas">The render canvas interface.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.LoadImage(System.String)">
+            <summary>
+            Creates a new Bitmap-Object from an image file,
+            locks the bits in the memory and makes them available
+            for furher action (e.g. creating a texture).
+            Method must be called before creating a texture to get the necessary
+            ImageData struct.
+            </summary>
+            <param name="filename">Path to the image file you would like to use as texture.</param>
+            <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.CreateImage(System.Int32,System.Int32,System.String)">
+            <summary>
+            Creates a new Image with a specified size and color.
+            </summary>
+            <param name="width">The width of the image.</param>
+            <param name="height">The height of the image.</param>
+            <param name="bgColor">The color of the image. Value must be JS compatible.</param>
+            <returns>An ImageData struct containing all necessary information for further processing.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.TextOnImage(Fusee.Engine.ImageData,System.String,System.Single,System.String,System.String,System.Single,System.Single)">
+            <summary>
+            Maps a specified text with on an image.
+            </summary>
+            <param name="imgData">The ImageData struct with the PixelData from the image.</param>
+            <param name="fontName">The name of the text-font.</param>
+            <param name="fontSize">The size of the text-font.</param>
+            <param name="text">The text that sould be mapped on the iamge.</param>
+            <param name="textColor">The color of the text-font.</param>
+            <param name="startPosX">The horizontal start-position of the text on the image.</param>
+            <param name="startPosY">The vertical start-position of the text on the image.</param>
+            <returns>An ImageData struct containing all necessary information for further processing</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.CreateTexture(Fusee.Engine.ImageData)">
+            <summary>
+            Creates a new Texture and binds it to the shader.
+            </summary>
+            <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+            <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.LoadFont(System.String,System.UInt32)">
+            <summary>
+            Loads a font file (*.ttf) and processes it with the given font size.
+            </summary>
+            <param name="filename">The filename.</param>
+            <param name="size">The size.</param>
+            <returns>An <see cref="T:Fusee.Engine.IFont"/> containing all necessary information for further processing.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.FixTextKerning(Fusee.Engine.IFont,Fusee.Math.float3[],System.String,System.Single)">
+            <summary>
+            Fixes the kerning of a text (if possible).
+            </summary>
+            <param name="font">The <see cref="T:Fusee.Engine.IFont"/> containing information about the font.</param>
+            <param name="vertices">The vertices.</param>
+            <param name="text">The text.</param>
+            <param name="scaleX">The scale x (OpenGL scaling factor).</param>
+            <returns>The fixed vertices as an array of <see cref="T:Fusee.Math.float3"/>.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.GetShaderParam(Fusee.Engine.IShaderProgramImp,System.String)">
+            <summary>
+            Gets the shader parameter.
+            The Shader parameter is used to bind values inside of shaderprograms that run on the graphics card.
+            Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+            </summary>
+            <param name="shaderProgram">The shader program.</param>
+            <param name="paramName">Name of the parameter.</param>
+            <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.GetParamValue(Fusee.Engine.IShaderProgramImp,Fusee.Engine.IShaderParam)">
+            <summary>
+            Gets the float parameter value inside a shaderprogram by using a <see cref="T:Fusee.Engine.IShaderParam"/> as search reference.
+            Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
+            </summary>
+            <param name="program">The program.</param>
+            <param name="param">The parameter.</param>
+            <returns>A float number (default is 0).</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.GetShaderParamList(Fusee.Engine.IShaderProgramImp)">
+            <summary>
+            Gets the shader parameter list of a specific <see cref="T:Fusee.Engine.IShaderProgramImp"/>. 
+            </summary>
+            <param name="shaderProgram">The shader program.</param>
+            <returns>All Shader parameters of a shaderprogram are returned.</returns>
+            <exception cref="T:System.ArgumentOutOfRangeException"></exception>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetShaderParam(Fusee.Engine.IShaderParam,System.Single)">
+            <summary>
+            Sets a float shader parameter.
+            </summary>
+            <param name="param">The parameter.</param>
+            <param name="val">The value.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetShaderParam(Fusee.Engine.IShaderParam,Fusee.Math.float2)">
+            <summary>
+            Sets a <see cref="T:Fusee.Math.float2"/> shader parameter.
+            </summary>
+            <param name="param">The parameter.</param>
+            <param name="val">The value.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetShaderParam(Fusee.Engine.IShaderParam,Fusee.Math.float3)">
+            <summary>
+            Sets a <see cref="T:Fusee.Math.float3"/> shader parameter.
+            </summary>
+            <param name="param">The parameter.</param>
+            <param name="val">The value.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetShaderParam(Fusee.Engine.IShaderParam,Fusee.Math.float4)">
+            <summary>
+            Sets a <see cref="T:Fusee.Math.float4"/> shader parameter.
+            </summary>
+            <param name="param">The parameter.</param>
+            <param name="val">The value.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetShaderParam(Fusee.Engine.IShaderParam,Fusee.Math.float4x4)">
+            <summary>
+            Sets a <see cref="T:Fusee.Math.float4x4"/> shader parameter.
+            </summary>
+            <param name="param">The parameter.</param>
+            <param name="val">The value.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetShaderParam(Fusee.Engine.IShaderParam,System.Int32)">
+            <summary>
+            Sets a int shader parameter.
+            </summary>
+            <param name="param">The parameter.</param>
+            <param name="val">The value.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetShaderParamTexture(Fusee.Engine.IShaderParam,Fusee.Engine.ITexture)">
+            <summary>
+            Sets a given Shader Parameter to a created texture
+            </summary>
+            <param name="param">Shader Parameter used for texture binding</param>
+            <param name="texId">An ITexture probably returned from CreateTexture method</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.CreateShader(System.String,System.String)">
+            <summary>
+            Creates the shaderprogram by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
+            Do not use this function in frequent updates.
+            </summary>
+            <param name="vs">The vertex shader code.</param>
+            <param name="ps">The pixel(=fragment) shader code.</param>
+            <returns>An instance of <see cref="T:Fusee.Engine.IShaderProgramImp"/>.</returns>
+            <exception cref="T:System.ApplicationException">
+            </exception>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetShader(Fusee.Engine.IShaderProgramImp)">
+            <summary>
+            Sets the shaderprogram onto the GL Rendercontext.
+            </summary>
+            <param name="program">The shaderprogram.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.Clear(Fusee.Engine.ClearFlags)">
+            <summary>
+            Clears the specified flags.
+            </summary>
+            <param name="flags">The flags.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetVertices(Fusee.Engine.IMeshImp,Fusee.Math.float3[])">
+            <summary>
+            Binds the vertices onto the GL Rendercontext and assigns an VertexBuffer index to the passed <see cref="T:Fusee.Engine.IMeshImp"/> instance.
+            </summary>
+            <param name="mr">The <see cref="T:Fusee.Engine.IMeshImp"/> instance.</param>
+            <param name="vertices">The vertices.</param>
+            <exception cref="T:System.ArgumentException">Vertices must not be null or empty</exception>
+            <exception cref="T:System.ApplicationException"></exception>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetNormals(Fusee.Engine.IMeshImp,Fusee.Math.float3[])">
+            <summary>
+            Binds the normals onto the GL Rendercontext and assigns an NormalBuffer index to the passed <see cref="T:Fusee.Engine.IMeshImp"/> instance.
+            </summary>
+            <param name="mr">The <see cref="T:Fusee.Engine.IMeshImp"/> instance.</param>
+            <param name="normals">The normals.</param>
+            <exception cref="T:System.ArgumentException">Normals must not be null or empty</exception>
+            <exception cref="T:System.ApplicationException"></exception>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetUVs(Fusee.Engine.IMeshImp,Fusee.Math.float2[])">
+            <summary>
+            Binds the UV coordinates onto the GL Rendercontext and assigns an UVBuffer index to the passed <see cref="T:Fusee.Engine.IMeshImp"/> instance.
+            </summary>
+            <param name="mr">The <see cref="T:Fusee.Engine.IMeshImp"/> instance.</param>
+            <param name="uvs">The UV's.</param>
+            <exception cref="T:System.ArgumentException">UVs must not be null or empty</exception>
+            <exception cref="T:System.ApplicationException"></exception>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetColors(Fusee.Engine.IMeshImp,System.UInt32[])">
+            <summary>
+            Binds the colors onto the GL Rendercontext and assigns an ColorBuffer index to the passed <see cref="T:Fusee.Engine.IMeshImp"/> instance.
+            </summary>
+            <param name="mr">The <see cref="T:Fusee.Engine.IMeshImp"/> instance.</param>
+            <param name="colors">The colors.</param>
+            <exception cref="T:System.ArgumentException">colors must not be null or empty</exception>
+            <exception cref="T:System.ApplicationException"></exception>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.SetTriangles(Fusee.Engine.IMeshImp,System.UInt16[])">
+            <summary>
+            Binds the triangles onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="T:Fusee.Engine.IMeshImp"/> instance.
+            </summary>
+            <param name="mr">The <see cref="T:Fusee.Engine.IMeshImp"/> instance.</param>
+            <param name="triangleIndices">The triangle indices.</param>
+            <exception cref="T:System.ArgumentException">triangleIndices must not be null or empty</exception>
+            <exception cref="T:System.ApplicationException"></exception>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.Render(Fusee.Engine.IMeshImp)">
+            <summary>
+            Renders the specified <see cref="T:Fusee.Engine.IMeshImp"/>.
+            </summary>
+            <param name="mr">The <see cref="T:Fusee.Engine.IMeshImp"/> instance.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.DebugLine(Fusee.Math.float3,Fusee.Math.float3,Fusee.Math.float4)">
+            <summary>
+            Draws a Debug Line in 3D Space by using a start and end point (float3).
+            </summary>
+            <param name="start">The startpoint of the DebugLine.</param>
+            <param name="end">The endpoint of the DebugLine.</param>
+            <param name="color">The color of the DebugLine.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.GetBufferContent(Fusee.Engine.Rectangle,Fusee.Engine.ITexture)">
+            <summary>
+            Gets the content of the buffer.
+            </summary>
+            <param name="quad">The Rectangle where the content is draw into.</param>
+            <param name="texId">The tex identifier.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.CreateMeshImp">
+            <summary>
+            Creates the mesh implementation.
+            </summary>
+            <returns>The <see cref="T:Fusee.Engine.IMeshImp"/> instance.</returns>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.Viewport(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Set the Viewport of the rendering output window by x,y position and width,height parameters. 
+            The Viewport is the portion of the final image window.
+            </summary>
+            <param name="x">The x.</param>
+            <param name="y">The y.</param>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.ColorMask(System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary>
+            Enable or disable Color channels to be written to the frame buffer (final image).
+            Use this function as a color channel filter for the final image.
+            </summary>
+            <param name="red">if set to <c>true</c> [red].</param>
+            <param name="green">if set to <c>true</c> [green].</param>
+            <param name="blue">if set to <c>true</c> [blue].</param>
+            <param name="alpha">if set to <c>true</c> [alpha].</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderContextImp.Frustum(System.Double,System.Double,System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Specify the View Frustum by settings its left,right,bottom,top,near and far planes. 
+            Image the View frustum as a cubical form that determines the Cameras 3D view along its far plane. 
+            </summary>
+            <param name="left">The left plane.</param>
+            <param name="right">The right plane.</param>
+            <param name="bottom">The bottom plane.</param>
+            <param name="top">The top plane.</param>
+            <param name="zNear">The z near plane.</param>
+            <param name="zFar">The z far plane.</param>
+        </member>
+        <member name="P:Fusee.Engine.RenderContextImp.ModelView">
+            <summary>
+            Gets or sets the model view.
+            </summary>
+            <value>
+            The model view.
+            </value>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="P:Fusee.Engine.RenderContextImp.Projection">
+            <summary>
+            The projection matrix used by the rendering pipeline
+            </summary>
+            <value>
+            The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
+            </value>
+            <remarks>
+            View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="!:Fusee.Engine.RenderContext.ModelView"/>).
+            The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
+            y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
+            view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
+            projection.
+            </remarks>
+        </member>
+        <member name="P:Fusee.Engine.RenderContextImp.ClearColor">
+            <summary>
+            Gets or sets the color of the background.
+            </summary>
+            <value>
+            The color of the clear.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderContextImp.ClearDepth">
+            <summary>
+            Gets or sets the clear depth value which is used to clear the depth buffer.
+            </summary>
+            <value>
+            Specifies the depth value used when the depth buffer is cleared. The initial value is 1. This value is clamped to the range [0,1].
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.RenderCanvasWindowImp">
+            <summary>
+            Use this class as a base class for implementing connectivity to whatever windows system you intend to support.
+            Inherit from this class, make sure to call the constructor with the window handle to render on, implement the
+            Run method and call the DoInit, DoUnload, DoRender and DoResize methods at appropriate incidences. Make sure
+            that _width and _height are set to the new window size before calling DoResize.
+            In addition you might have your connectivity class as well implement the <see cref="T:Fusee.Engine.IInputImp"/> interface because
+            often mouse and keyboard input are tied to the windows output.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.RenderCanvasImpBase">
+            <summary>
+            OpenTK implementation of RenderCanvas for the window output.
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.RenderCanvasImpBase._width">
+            <summary>
+            The _width
+            </summary>
+        </member>
+        <member name="F:Fusee.Engine.RenderCanvasImpBase._height">
+            <summary>
+            The _height
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImpBase.DoInit">
+            <summary>
+            Does the initialize of this instance.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImpBase.DoUnLoad">
+            <summary>
+            Does the unload of this instance. 
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImpBase.DoRender">
+            <summary>
+            Does the render of this instance.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImpBase.DoResize">
+            <summary>
+            Does the resize on this instance.
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.RenderCanvasImpBase.Init">
+            <summary>
+            Occurs when [initialize].
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.RenderCanvasImpBase.UnLoad">
+            <summary>
+            Occurs when [un load].
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.RenderCanvasImpBase.Render">
+            <summary>
+            Occurs when [render].
+            </summary>
+        </member>
+        <member name="E:Fusee.Engine.RenderCanvasImpBase.Resize">
+            <summary>
+            Occurs when [resize].
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasWindowImp.#ctor(System.IntPtr,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.RenderCanvasWindowImp"/> class.
+            </summary>
+            <param name="windowHandle">The window handle.</param>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasWindowImp.Present">
+            <summary>
+            Presents the rendered result of this instance. The rendering buffers are flushed and the deltatime is recalulated.
+            Call this function after rendering.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasWindowImp.SetCursor(Fusee.Engine.CursorType)">
+            <summary>
+            Set the cursor (the mouse pointer image) to one of the pre-defined types
+            </summary>
+            <param name="cursorType">The type of the cursor to set.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasWindowImp.OpenLink(System.String)">
+            <summary>
+            Opens the given URL in the user's standard web browser. The link MUST start with "http://" otherwis
+            </summary>
+            <param name="link">The URL to open</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasWindowImp.Run">
+            <summary>
+            Runs this application instance.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasWindowImp.Dispose">
+            <summary>
+            Releases this instance for garbage collection. Do not call this method in frequent updates because of performance reasons.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasWindowImp.Dispose(System.Boolean)">
+            <summary>
+            Releases unmanaged and - optionally - managed resources.
+            </summary>
+            <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasWindowImp.Finalize">
+            <summary>
+            Finalizes an instance of the <see cref="T:Fusee.Engine.RenderCanvasWindowImp"/> class.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasWindowImp.Width">
+            <summary>
+            Gets or sets the width.
+            </summary>
+            <value>
+            The width.
+            </value>
+            <exception cref="T:System.NotImplementedException">Cannot (yet) set width on RenderContextWindowImp</exception>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasWindowImp.Height">
+            <summary>
+            Gets or sets the height.
+            </summary>
+            <value>
+            The height.
+            </value>
+            <exception cref="T:System.NotImplementedException">Cannot (yet) set height on RenderContextWindowImp</exception>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasWindowImp.Caption">
+            <summary>
+            Gets or sets the caption(title of the window).
+            </summary>
+            <value>
+            The caption.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasWindowImp.DeltaTime">
+            <summary>
+            Gets the delta time.
+            The delta time is the time that was required to render the last frame in milliseconds.
+            This value can be used to determine the frames per second of the application.
+            </summary>
+            <value>
+            The delta time in milliseconds.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasWindowImp.VerticalSync">
+            <summary>
+            Gets or sets a value indicating whether [vertical synchronize].
+            This option is used to reduce "Glitches" during rendering.
+            </summary>
+            <value>
+              <c>true</c> if [vertical synchronize]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasWindowImp.EnableBlending">
+            <summary>
+            Gets or sets a value indicating whether [enable blending].
+            Blending is used to display transparent graphics.
+            </summary>
+            <value>
+              <c>true</c> if [enable blending]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasWindowImp.Fullscreen">
+            <summary>
+            Gets or sets a value indicating whether [fullscreen] is enabled.
+            </summary>
+            <value>
+              <c>true</c> if [fullscreen]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasWindowImp.Timer">
+            <summary>
+            Gets the timer.
+            The timer value can be used to measure time that passed since the first call of this property.
+            </summary>
+            <value>
+            The timer.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.RenderCanvasImp">
+            <summary>
+            This is a default render canvas implementation creating its own rendering window.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImp.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.RenderCanvasImp"/> class.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImp.VideoWall(System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Changes the window of the application to video wall mode.
+            </summary>
+            <param name="val">activate (true) or not (false).</param>
+            <param name="monitorsHor">Number of monitors on horizontal axis.</param>
+            <param name="monitorsVert">Number of monitors on vertical axis.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImp.SetWindowSize(System.Int32,System.Int32,System.Boolean,System.Int32,System.Int32)">
+            <summary>
+            Sets the size of the output window for desktop development.
+            </summary>
+            <param name="width">The width of the window.</param>
+            <param name="height">The height of the window.</param>
+            <param name="borderHidden">Show the window border or not.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImp.Present">
+            <summary>
+            Presents this application instance. Call this function after rendering to show the final image. 
+            After Present is called the render buffers get flushed.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImp.SetCursor(Fusee.Engine.CursorType)">
+            <summary>
+            Set the cursor (the mouse pointer image) to one of the pre-defined types
+            </summary>
+            <param name="cursorType">The type of the cursor to set.</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImp.OpenLink(System.String)">
+            <summary>
+            Opens the given URL in the user's standard web browser. The link MUST start with "http://".
+            </summary>
+            <param name="link">The URL to open</param>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasImp.Run">
+            <summary>
+            Implementation Tasks: Runs this application instance. This function should not be called more than once as its only for initilization purposes.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.Width">
+            <summary>
+            Implementation Tasks: Gets or sets the width(pixel units) of the Canvas.
+            </summary>
+            <value>
+            The width.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.Height">
+            <summary>
+            Gets or sets the height in pixel units.
+            </summary>
+            <value>
+            The height.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.Caption">
+            <summary>
+            Gets or sets the caption(title of the window).
+            </summary>
+            <value>
+            The caption.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.DeltaTime">
+            <summary>
+            Gets the delta time.
+            The delta time is the time that was required to render the last frame in milliseconds.
+            This value can be used to determine the frames per second of the application.
+            </summary>
+            <value>
+            The delta time in milliseconds.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.VerticalSync">
+            <summary>
+            Gets or sets a value indicating whether [vertical synchronize].
+            This option is used to reduce "Glitches" during rendering.
+            </summary>
+            <value>
+              <c>true</c> if [vertical synchronize]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.EnableBlending">
+            <summary>
+            Gets or sets a value indicating whether [enable blending].
+            Blending is used to render transparent objects.
+            </summary>
+            <value>
+              <c>true</c> if [enable blending]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.Fullscreen">
+            <summary>
+            Gets or sets a value indicating whether [fullscreen] is enabled.
+            </summary>
+            <value>
+              <c>true</c> if [fullscreen]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.Focused">
+            <summary>
+            Gets a value indicating whether [focused].
+            This property is used to identify if this application is the active window of the user.
+            </summary>
+            <value>
+              <c>true</c> if [focused]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.VideoWallMode">
+            <summary>
+            Activates (true) or deactivates (false) the video wall feature.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.TryptMonitorSetupVertical">
+            <summary>
+            This represents the number of the monitors in a vertical column.
+            </summary>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasImp.TryptMonitorSetupHorizontal">
+            <summary>
+            This represents the number of the monitors in a horizontal row.
+            </summary>
+        </member>
+        <member name="M:Fusee.Engine.RenderCanvasGameWindow.#ctor(Fusee.Engine.RenderCanvasImp,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Fusee.Engine.RenderCanvasGameWindow"/> class.
+            </summary>
+            <param name="renderCanvasImp">The render canvas implementation.</param>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
+            <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasGameWindow.DeltaTime">
+            <summary>
+            Gets the delta time.
+            The delta time is the time that was required to render the last frame in milliseconds.
+            This value can be used to determine the frames per second of the application.
+            </summary>
+            <value>
+            The delta time in milliseconds.
+            </value>
+        </member>
+        <member name="P:Fusee.Engine.RenderCanvasGameWindow.Blending">
+            <summary>
+            Gets or sets a value indicating whether [blending].
+            Blending is used to render transparent objects.
+            </summary>
+            <value>
+              <c>true</c> if [blending]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="T:Fusee.Engine.ShaderParam">
+            <summary>
+            Implementation of the <see cref="T:Fusee.Engine.IShaderParam"/> interface. 
+            This object is passed to shaderprograms that are running on the graphics card to modify shader values.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.ShaderProgramImp">
+            <summary>
+            Implementation of <see cref="T:Fusee.Engine.IShaderProgramImp"/> for usage with OpenTK framework.
+            </summary>
+        </member>
+        <member name="T:Fusee.Engine.Texture">
+            <summary>
+            Texture Implementation for OpenTK, an integer value is used as a handle
+            </summary>
+        </member>
+    </members>
+</doc>
