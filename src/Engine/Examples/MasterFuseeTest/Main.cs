@@ -38,20 +38,20 @@ namespace Examples.MasterFuseeTest
         {
             #region LevelInit
             var seri = new Serializer();
-            using (var fileLevel = File.OpenRead(@"Assets/Beispiel.fus"))
+            using (var fileLevel = File.OpenRead(@"Assets/blume_blau.fus"))
             {
                 _levelSC = seri.Deserialize(fileLevel, null, typeof(SceneContainer)) as SceneContainer;
             }
             _levelSR = new SceneRenderer(_levelSC, "Assets");
-            _levelSOC = FindByName("Beispiel", _levelSC.Children);
+            _levelSOC = FindByName("blaetter", _levelSC.Children);
             #endregion
             #region PlayerInit
-            using (var filePlayer = File.OpenRead(@"Assets/Biene.fus"))
+            using (var filePlayer = File.OpenRead(@"Assets/blume_blau.fus"))
             {
                 _playerSC = seri.Deserialize(filePlayer, null, typeof(SceneContainer)) as SceneContainer;
             }
             _playerSR = new SceneRenderer(_playerSC, "Assets");
-            _playerSOC = FindByName("Würfel", _playerSC.Children);
+            _playerSOC = FindByName("blume_blau_container", _playerSC.Children);
             _playerSOC.Transform.Scale = _playerSOC.Transform.Scale / 6;
             #endregion
 
@@ -80,14 +80,14 @@ namespace Examples.MasterFuseeTest
             _scene = new SceneContainer[_lanesArray][_arrayLength];
              */
 
-            
-            loadC4D("Beispiel", 0, 3, "Beispiel");
+
+            loadC4D("blume_lila", 0, 3, "blume_lila_container");
             _sOClist[0][3].Transform.Scale = _sOClist[0][3].Transform.Scale / 18;
             _sOClist[0][3].Transform.Translation.x = 25;
             _sOClist[0][3].Transform.Translation.y = 80; //Höhe?
             _sOClist[0][3].Transform.Translation.z = 250; //nach Rechts
 
-            loadC4D("Beispiel", 1, 4, "Beispiel");
+            loadC4D("blume_gold", 1, 4, "blume_gold_container");
             _sOClist[1][4].Transform.Scale = _sOClist[1][4].Transform.Scale / 18;
             _sOClist[1][4].Transform.Translation.x = 25;
             _sOClist[1][4].Transform.Translation.y = 60; //Höhe?
@@ -116,10 +116,12 @@ namespace Examples.MasterFuseeTest
             {
                 if (name == soc.Name)
                     return soc;
-
-                SceneObjectContainer found = FindByName(name, soc.Children);
-                if (found != null)
-                    return found;
+                if (soc.Children != null)
+                {
+                    SceneObjectContainer found = FindByName(name, soc.Children);
+                    if (found != null)
+                        return found;
+                }
             }
             return null;
         }
@@ -221,9 +223,9 @@ namespace Examples.MasterFuseeTest
             //RC.Viewport(0, 0, Width, Height);
             //var aspectRatio = Width / (float)Height;
             //RC.Projection = float4x4.CreateOrthographic(800,600,1,100);
-            RC.Viewport(0, 0, Width, Height*4);
-            var aspectRatio = 1f;// OLD: Width / Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver2, aspectRatio, 280, 10000);
+            RC.Viewport(0, 0, Width, Height);
+            var aspectRatio = Width / (float)Height;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 280, 10000);
         }
 
         public static void Main()
