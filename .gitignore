@@ -110,7 +110,7 @@ csx
 AppPackages/
 
 # Others
-[Bb]in
+# [Bb]in
 [Oo]bj
 sql
 TestResults
