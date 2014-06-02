@@ -46,7 +46,7 @@ namespace Examples.BeeTheGame
             _screenWidthAspect = _screenWidthAspect/1680;
             _screenHeight = Screen.PrimaryScreen.Bounds.Height;
             _screenHeightAspect = _screenHeight / 945;
-            SetWindowSize(_screenWidth, _screenHeight / 9 * 2, true, 0, 0);
+            SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0 + 2, 0);
 
             #region LevelInit
             var seri = new Serializer();
@@ -153,7 +153,7 @@ namespace Examples.BeeTheGame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             //RC.ModelView = float4x4.LookAt(500, 120, 280, 0, 420, 280, 0, 1, 0);// * float4x4.CreateRotationY(_yAngle) * float4x4.CreateTranslation(_xPos, 0,0)
             // ORGINAL: //RC.ModelView = float4x4.LookAt(150, 420, 280, 0, 420, 280, 0, 1, 0);
-            RC.ModelView = float4x4.LookAt(150, 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
+            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
             if (_levelSOC != null)
             {
                 _levelSOC.Transform.Rotation.y = _yAngle;
