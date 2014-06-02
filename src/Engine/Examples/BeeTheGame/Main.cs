@@ -5,6 +5,8 @@ using Fusee.Engine.SimpleScene;
 using Fusee.SceneManagement;
 using Fusee.Math;
 using Fusee.Serialization;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace Examples.BeeTheGame
 {
@@ -19,6 +21,9 @@ namespace Examples.BeeTheGame
         private int _lanesArray = 6;
 
         private int _currentLane = 0;
+
+        private int _screenWidth = 800;
+        private int _screenHeight = 600;
 
         private SceneObjectContainer _levelSOC;
         private SceneRenderer _levelSR;
@@ -35,14 +40,18 @@ namespace Examples.BeeTheGame
 
         public override void Init()
         {
+            _screenWidth = Screen.PrimaryScreen.Bounds.Width;
+            _screenHeight = Screen.PrimaryScreen.Bounds.Height;
+            SetWindowSize(_screenWidth, _screenHeight / 9 * 2, true, 0, 0);
+
             #region LevelInit
             var seri = new Serializer();
-            using (var fileLevel = File.OpenRead(@"Assets/blume_blau.fus"))
+            using (var fileLevel = File.OpenRead(@"Assets/Bienenstock.fus"))
             {
                 _levelSC = seri.Deserialize(fileLevel, null, typeof(SceneContainer)) as SceneContainer;
             }
             _levelSR = new SceneRenderer(_levelSC, "Assets");
-            _levelSOC = FindByName("blaetter", _levelSC.Children);
+            _levelSOC = FindByName("bienenstock", _levelSC.Children);
             #endregion
             #region PlayerInit
             using (var filePlayer = File.OpenRead(@"Assets/blume_blau.fus"))
@@ -129,9 +138,9 @@ namespace Examples.BeeTheGame
         public override void RenderAFrame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            RC.ModelView = float4x4.LookAt(500, 120, 280, 0, 420, 280, 0, 1, 0);// * float4x4.CreateRotationY(_yAngle) * float4x4.CreateTranslation(_xPos, 0,0)
-
-
+            //RC.ModelView = float4x4.LookAt(500, 120, 280, 0, 420, 280, 0, 1, 0);// * float4x4.CreateRotationY(_yAngle) * float4x4.CreateTranslation(_xPos, 0,0)
+            // ORGINAL: //RC.ModelView = float4x4.LookAt(150, 420, 280, 0, 420, 280, 0, 1, 0);
+            RC.ModelView = float4x4.LookAt(150, 300, 280, 0, 220, 200, 0, 1, 0);
             if (_levelSOC != null)
             {
                 _levelSOC.Transform.Rotation.y = _yAngle;
@@ -225,7 +234,9 @@ namespace Examples.BeeTheGame
             //RC.Projection = float4x4.CreateOrthographic(800,600,1,100);
             RC.Viewport(0, 0, Width, Height);
             var aspectRatio = Width / (float)Height;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 280, 10000);
+            //RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 280, 10000);
+            //ORG: //RC.Projection = float4x4.CreateOrthographic(Width, Height * 5, 5, 100000);
+            RC.Projection = float4x4.CreateOrthographic(Width, Height, 5, 100000);
         }
 
         public static void Main()
