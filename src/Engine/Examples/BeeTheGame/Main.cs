@@ -40,8 +40,16 @@ namespace Examples.BeeTheGame
         private SceneContainer[][] _scene;
         // private int allObjCount = 0;
 
+        //GUI Stuff
+        private bool _running = true;
+        private GUIRender _guiRender;
+
         public override void Init()
         {
+
+            //more GUI stuff
+            _guiRender = new GUIRender(RC);
+
             _screenWidth = Screen.PrimaryScreen.Bounds.Width;
             _screenWidthAspect = _screenWidthAspect/1680;
             _screenHeight = Screen.PrimaryScreen.Bounds.Height;
@@ -117,6 +125,8 @@ namespace Examples.BeeTheGame
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
             _yAngle = 0;
             _xPos = 0;
+
+
         }
 
         private void loadC4D(string name, int lane, int place, string childName)
@@ -199,6 +209,21 @@ namespace Examples.BeeTheGame
             {
                 ChangeBeeRot(false, 1f);
             }
+            //Pause function. still not working correctly.
+            if (_running == true)
+            {
+                if (Input.Instance.IsKey(KeyCodes.P))
+                {
+                    _guiRender.Pause(_running);
+                }
+            }
+            if (_running == false)
+            {
+                if (Input.Instance.IsKey(KeyCodes.P))
+                {
+                    _guiRender.Pause(_running);
+                }
+            }
 
             _levelSR.Render(RC);
             _playerSR.Render(RC);
@@ -217,6 +242,8 @@ namespace Examples.BeeTheGame
                 }
 
             }
+            //try rendering the gui
+            _guiRender.RenderIngame();
             Present();
         }
 
