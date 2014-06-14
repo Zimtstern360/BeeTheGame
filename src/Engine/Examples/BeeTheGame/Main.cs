@@ -21,6 +21,9 @@ namespace Examples.BeeTheGame
         private float _yPos;
         private bool _rotChanged = false;
 
+        private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
+        private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" };
+
         private float _newRot;
 
         private int _arrayLength = 10;
@@ -63,7 +66,6 @@ namespace Examples.BeeTheGame
             SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0 + 2, 0);
 
             var seri = new Serializer();
-            
 
             #region LevelInit
             using (var fileLevel = File.OpenRead(@"Assets/ground.fus"))
@@ -116,38 +118,36 @@ namespace Examples.BeeTheGame
             }
             #endregion
 
-
-
-            int randomLane = 0;
-            int randomGrid = 5;
-            //Lane und Pos check
-            //RND Asset
-            loadC4D("Bienenstock", randomLane, randomGrid, "bienenstock");
-            _sOClist[randomLane][randomGrid].Transform.Scale = _sOClist[randomLane][randomGrid].Transform.Scale / 3;
-            _sOClist[randomLane][randomGrid].Transform.Translation.x = -25;
-            _sOClist[randomLane][randomGrid].Transform.Translation.y = 55; //Höhe?
-            _sOClist[randomLane][randomGrid].Transform.Translation.z = 1250; //nach Rechts //1300*randomGrid/_arrayLength;
-            _sOClist[randomLane][randomGrid].Transform.Rotation.y = 90;
-
-
-            loadC4D("blume_lila", 0, 3, "blume_lila_container");
-            _sOClist[0][3].Transform.Scale = _sOClist[0][3].Transform.Scale / 3;
-            _sOClist[0][3].Transform.Translation.x = -25;
-            _sOClist[0][3].Transform.Translation.y = 55; //Höhe?
-            _sOClist[0][3].Transform.Translation.z = 350; //nach Rechts
-            _sOClist[0][3].Transform.Rotation.y = 90;
-
-            loadC4D("blume_gold", 1, 4, "blume_gold_container");
-            _sOClist[1][4].Transform.Scale = _sOClist[1][4].Transform.Scale / 3;
-            _sOClist[1][4].Transform.Translation.x = -25;
-            _sOClist[1][4].Transform.Translation.y = 55; //Höhe?
-            _sOClist[1][4].Transform.Translation.z = 480; //nach Rechts
-            _sOClist[1][4].Transform.Rotation.y = 90;
+            for (int aCount=0 ; aCount < 15; aCount++)
+            {
+                 SpawnFlower();
+            }
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
             _yPos = 100;
             _xPos = 250;
             _gameState = GameState.InGame;
+        }
+
+        private void SpawnFlower()
+        {
+            Random rnd = new Random();
+            int randomLane = rnd.Next(_lanesArray);
+            int randomGrid = rnd.Next(_arrayLength);
+            //Lane und Pos check
+            while (_sOClist[randomLane][randomGrid] != null)
+            {
+                randomLane = rnd.Next(_lanesArray - 1);
+                randomGrid = rnd.Next(_arrayLength - 1);
+            }
+            //RND Asset
+            int assetsInt = rnd.Next(assetsStrings.Length);
+            loadC4D(assetsStrings[assetsInt], randomLane, randomGrid, assetsContStrings[assetsInt]);
+            _sOClist[randomLane][randomGrid].Transform.Scale = _sOClist[randomLane][randomGrid].Transform.Scale / 3;
+            _sOClist[randomLane][randomGrid].Transform.Translation.x = -25;
+            _sOClist[randomLane][randomGrid].Transform.Translation.y = 53; //Höhe?
+            _sOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
+            _sOClist[randomLane][randomGrid].Transform.Rotation.y = 90;
         }
 
         private void loadC4D(string name, int lane, int place, string childName)
