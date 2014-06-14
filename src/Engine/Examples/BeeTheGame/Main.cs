@@ -41,6 +41,10 @@ namespace Examples.BeeTheGame
         private SceneRenderer _levelSR;
         private SceneContainer _levelSC;
 
+        private SceneObjectContainer _stockSOC;
+        private SceneRenderer _stockSR;
+        private SceneContainer _stockSC;
+
         private SceneObjectContainer _playerSOC;
         private SceneRenderer _playerSR;
         private SceneContainer _playerSC;
@@ -58,15 +62,25 @@ namespace Examples.BeeTheGame
             _screenHeightAspect = _screenHeight / 945;
             SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0 + 2, 0);
 
-            #region LevelInit
             var seri = new Serializer();
-            using (var fileLevel = File.OpenRead(@"Assets/Bienenstock.fus"))
+            
+
+            #region LevelInit
+            using (var fileLevel = File.OpenRead(@"Assets/ground.fus"))
             {
                 _levelSC = seri.Deserialize(fileLevel, null, typeof(SceneContainer)) as SceneContainer;
             }
             _levelSR = new SceneRenderer(_levelSC, "Assets");
-            _levelSOC = FindByName("bienenstock", _levelSC.Children);
+            _levelSOC = FindByName("landscape_container", _levelSC.Children);
+
+            using (var fileLevel = File.OpenRead(@"Assets/Bienenstock.fus"))
+            {
+                _stockSC = seri.Deserialize(fileLevel, null, typeof(SceneContainer)) as SceneContainer;
+            }
+            _stockSR = new SceneRenderer(_stockSC, "Assets");
+            _stockSOC = FindByName("bienenstock", _stockSC.Children);
             #endregion
+
             #region PlayerInit
             using (var filePlayer = File.OpenRead(@"Assets/blume_lila.fus"))
             {
@@ -75,8 +89,15 @@ namespace Examples.BeeTheGame
             _playerSR = new SceneRenderer(_playerSC, "Assets");
             _playerSOC = FindByName("blume_lila_container", _playerSC.Children);
             _playerSOC.Transform.Scale = _playerSOC.Transform.Scale / 5;
+
+            if (_playerSOC != null)
+            {
+                _playerSOC.Transform.Translation.z = 200;
+                _playerSOC.Transform.Translation.y = 500;
+            }
             #endregion
 
+            #region ArrayInit
             _sOClist = new SceneObjectContainer[_lanesArray][];
             _sRlist = new SceneRenderer[_lanesArray][];
             _scene = new SceneContainer[_lanesArray][];
@@ -93,40 +114,39 @@ namespace Examples.BeeTheGame
             {
                 _scene[c3] = new SceneContainer[_arrayLength];
             }
+            #endregion
 
 
 
-            /*
-             _sOClist = new SceneObjectContainer[_lanesArray][_arrayLength];
-            _sRlist = new SceneRenderer[_lanesArray][_arrayLength];
-            _scene = new SceneContainer[_lanesArray][_arrayLength];
-             */
-
-            loadC4D("Bienenstock", 0, 5, "bienenstock");
-            _sOClist[0][5].Transform.Scale = _sOClist[0][5].Transform.Scale / 12;
-            _sOClist[0][5].Transform.Translation.x = 25;
-            _sOClist[0][5].Transform.Translation.y = 110; //Höhe?
-            _sOClist[0][5].Transform.Translation.z = 1250; //nach Rechts
-            _sOClist[0][5].Transform.Rotation.y = 0;
+            int randomLane = 0;
+            int randomGrid = 5;
+            //Lane und Pos check
+            //RND Asset
+            loadC4D("Bienenstock", randomLane, randomGrid, "bienenstock");
+            _sOClist[randomLane][randomGrid].Transform.Scale = _sOClist[randomLane][randomGrid].Transform.Scale / 3;
+            _sOClist[randomLane][randomGrid].Transform.Translation.x = -25;
+            _sOClist[randomLane][randomGrid].Transform.Translation.y = 55; //Höhe?
+            _sOClist[randomLane][randomGrid].Transform.Translation.z = 1250; //nach Rechts //1300*randomGrid/_arrayLength;
+            _sOClist[randomLane][randomGrid].Transform.Rotation.y = 90;
 
 
             loadC4D("blume_lila", 0, 3, "blume_lila_container");
-            _sOClist[0][3].Transform.Scale = _sOClist[0][3].Transform.Scale / 9;
-            _sOClist[0][3].Transform.Translation.x = 25;
-            _sOClist[0][3].Transform.Translation.y = 130; //Höhe?
+            _sOClist[0][3].Transform.Scale = _sOClist[0][3].Transform.Scale / 3;
+            _sOClist[0][3].Transform.Translation.x = -25;
+            _sOClist[0][3].Transform.Translation.y = 55; //Höhe?
             _sOClist[0][3].Transform.Translation.z = 350; //nach Rechts
             _sOClist[0][3].Transform.Rotation.y = 90;
 
             loadC4D("blume_gold", 1, 4, "blume_gold_container");
-            _sOClist[1][4].Transform.Scale = _sOClist[1][4].Transform.Scale / 9;
-            _sOClist[1][4].Transform.Translation.x = 25;
-            _sOClist[1][4].Transform.Translation.y = 150; //Höhe?
+            _sOClist[1][4].Transform.Scale = _sOClist[1][4].Transform.Scale / 3;
+            _sOClist[1][4].Transform.Translation.x = -25;
+            _sOClist[1][4].Transform.Translation.y = 55; //Höhe?
             _sOClist[1][4].Transform.Translation.z = 480; //nach Rechts
             _sOClist[1][4].Transform.Rotation.y = 90;
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
-            _yAngle = 0;
-            _xPos = 0;
+            _yPos = 100;
+            _xPos = 250;
             _gameState = GameState.InGame;
         }
 
@@ -186,15 +206,15 @@ namespace Examples.BeeTheGame
         private void RunGame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
+            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 160 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 145 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
             /*if (_levelSOC != null && (_levelSOC.Transform.Rotation.y >= _twoPi || _levelSOC.Transform.Rotation.y < 0))
             {
                 _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y % _twoPi;
             }*/
             if (_playerSOC != null)
             {
-                _playerSOC.Transform.Translation.z = _xPos + 100;
-                _playerSOC.Transform.Translation.y = _yPos + 50;
+                _playerSOC.Transform.Translation.z = _xPos;
+                _playerSOC.Transform.Translation.y = _yPos;
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Space))
@@ -234,6 +254,7 @@ namespace Examples.BeeTheGame
             }
 
             _levelSR.Render(RC);
+            _stockSR.Render(RC);
             _playerSR.Render(RC);
             for (int lC = 0; lC < _lanesArray; lC++)
             {
@@ -257,8 +278,8 @@ namespace Examples.BeeTheGame
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
-            if (_levelSOC != null)
-            {/*
+            /*if (_levelSOC != null)
+            {
                 if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
                 {
                     _levelSOC.Transform.Rotation.y = _twoPi - _levelSOC.Transform.Rotation.y;
@@ -268,12 +289,12 @@ namespace Examples.BeeTheGame
                 {
                     _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y - _twoPi;
                     _yAngle = _yAngle - _twoPi;
-                }*/
-            }
+                }
+            }*/
             if (_playerSOC != null)
             {
-                _playerSOC.Transform.Translation.z = _xPos + 100;
-                _playerSOC.Transform.Translation.y = _yPos + 50;
+                _playerSOC.Transform.Translation.z = _xPos;
+                _playerSOC.Transform.Translation.y = _yPos;
             }
             //---------------------------------
             /*if (_newRot > _twoPi && _yAngle > _newRot % _twoPi)
@@ -320,11 +341,13 @@ namespace Examples.BeeTheGame
             }
 
 
-            if (_levelSOC != null)
+            if (_levelSOC != null && _stockSOC != null)
             {
                 _levelSOC.Transform.Rotation.y = _yAngle;
+                _stockSOC.Transform.Rotation.y = _yAngle;
             }
             _levelSR.Render(RC);
+            _stockSR.Render(RC);
             _playerSR.Render(RC);
            
             Present();
@@ -334,8 +357,8 @@ namespace Examples.BeeTheGame
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
-            if (_levelSOC != null)
-            {/*
+            /*if (_levelSOC != null)
+            {
                 if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
                 {
                     _levelSOC.Transform.Rotation.y = _twoPi - _levelSOC.Transform.Rotation.y;
@@ -345,12 +368,12 @@ namespace Examples.BeeTheGame
                 {
                     _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y - _twoPi;
                     _yAngle = _yAngle - _twoPi;
-                }*/
-            }
+                }
+            }*/
             if (_playerSOC != null)
             {
-                _playerSOC.Transform.Translation.z = _xPos + 100;
-                _playerSOC.Transform.Translation.y = _yPos + 50;
+                _playerSOC.Transform.Translation.z = _xPos;
+                _playerSOC.Transform.Translation.y = _yPos;
             }
             //---------------------------------
            /* if (_newRot < 0 && ( _yAngle < _twoPi - _newRot || _yAngle == 0 ))
@@ -397,11 +420,14 @@ namespace Examples.BeeTheGame
                 _gameState = GameState.InGame;
             }
 
-            if (_levelSOC != null)
+
+            if (_levelSOC != null && _stockSOC != null)
             {
                 _levelSOC.Transform.Rotation.y = _yAngle;
+                _stockSOC.Transform.Rotation.y = _yAngle;
             }
             _levelSR.Render(RC);
+            _stockSR.Render(RC);
             _playerSR.Render(RC);
 
             Present();
