@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Fusee.Engine;
 using Fusee.Engine.SimpleScene;
@@ -10,12 +12,16 @@ using System.Windows.Forms;
 
 namespace Examples.BeeTheGame
 {
+    public enum GameState { Paused, InGame, RotatingW, RotatingS, GameOver, GameStart };
+
     public class BeeTheGame : RenderCanvas
     {
         private float _yAngle;
         private float _xPos;
         private float _yPos;
         private bool _rotChanged = false;
+
+        private float _newRot;
 
         private int _arrayLength = 10;
         private int _lanesArray = 6;
@@ -26,6 +32,10 @@ namespace Examples.BeeTheGame
         private int _screenHeight = 600;
         private int _screenWidthAspect = 1680;
         private int _screenHeightAspect = 945;
+
+        private float _twoPi = (float) Math.Round(MathHelper.TwoPi, 6);
+
+        private GameState _gameState;
 
         private SceneObjectContainer _levelSOC;
         private SceneRenderer _levelSR;
@@ -117,6 +127,7 @@ namespace Examples.BeeTheGame
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
             _yAngle = 0;
             _xPos = 0;
+            _gameState = GameState.InGame;
         }
 
         private void loadC4D(string name, int lane, int place, string childName)
@@ -150,18 +161,38 @@ namespace Examples.BeeTheGame
         // is called once a frame
         public override void RenderAFrame()
         {
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            //RC.ModelView = float4x4.LookAt(500, 120, 280, 0, 420, 280, 0, 1, 0);// * float4x4.CreateRotationY(_yAngle) * float4x4.CreateTranslation(_xPos, 0,0)
-            // ORGINAL: //RC.ModelView = float4x4.LookAt(150, 420, 280, 0, 420, 280, 0, 1, 0);
-            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
-            if (_levelSOC != null)
+            switch (_gameState)
             {
-                _levelSOC.Transform.Rotation.y = _yAngle;
-                //_sceneObject.Transform.Translation.x = _xPos;
+                case GameState.Paused:
+                    break;
+                case GameState.InGame:
+                    RunGame();
+                    break;
+                case GameState.RotatingW:
+                    DoRotW();
+                    break;
+                case GameState.RotatingS:
+                    DoRotS();
+                    break;
+                case GameState.GameOver:
+                    break;
+                case GameState.GameStart:
+                    break;
+                default:
+                    return;
             }
+        }
+
+        private void RunGame()
+        {
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
+            /*if (_levelSOC != null && (_levelSOC.Transform.Rotation.y >= _twoPi || _levelSOC.Transform.Rotation.y < 0))
+            {
+                _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y % _twoPi;
+            }*/
             if (_playerSOC != null)
             {
-                //_sceneObject2.Transform.Rotation.x = _yAngle;
                 _playerSOC.Transform.Translation.z = _xPos + 100;
                 _playerSOC.Transform.Translation.y = _yPos + 50;
             }
@@ -175,10 +206,6 @@ namespace Examples.BeeTheGame
                     _currentLane = 0;
                 }
             }
-            if (Input.Instance.IsKey(KeyCodes.W))
-                _yAngle += 1.0f * (float)Time.Instance.DeltaTime;
-            if (Input.Instance.IsKey(KeyCodes.S))
-                _yAngle -= 1.0f * (float)Time.Instance.DeltaTime;
             if (Input.Instance.IsKey(KeyCodes.Up))
                 _yPos += 25.0f * (float)Time.Instance.DeltaTime;
             if (Input.Instance.IsKey(KeyCodes.Down))
@@ -189,15 +216,21 @@ namespace Examples.BeeTheGame
                 _xPos -= 100.0f * (float)Time.Instance.DeltaTime;
             if (Input.Instance.IsKey(KeyCodes.W))
             {
-                ChangeBeeRot(true, 1f);
+                ChangeBeeRot(true, 1);
+                _yAngle = _levelSOC.Transform.Rotation.y;
+                _newRot = (float) Math.Round(_yAngle + (_twoPi / _lanesArray),6);
+                _gameState = GameState.RotatingW;
             }
             if (Input.Instance.IsKey(KeyCodes.S))
             {
-                ChangeBeeRot(true, -1f);
+                ChangeBeeRot(true, -1);
+                _yAngle = _levelSOC.Transform.Rotation.y;
+                _newRot = (float) Math.Round(_yAngle - (_twoPi / _lanesArray),6);
+                _gameState = GameState.RotatingS;
             }
             if (Input.Instance.IsKey(KeyCodes.Right) || Input.Instance.IsKey(KeyCodes.Left) || Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Down))
             {
-                ChangeBeeRot(false, 1f);
+                ChangeBeeRot(false, 1);
             }
 
             _levelSR.Render(RC);
@@ -220,9 +253,164 @@ namespace Examples.BeeTheGame
             Present();
         }
 
-        private void ChangeBeeRot(bool what, float dir)
+        private void DoRotW()
         {
-            if (what != _rotChanged || dir != 0.0f)
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
+            if (_levelSOC != null)
+            {/*
+                if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
+                {
+                    _levelSOC.Transform.Rotation.y = _twoPi - _levelSOC.Transform.Rotation.y;
+                    _yAngle = _twoPi - _yAngle;
+                }
+                if (_levelSOC.Transform.Rotation.y >= _twoPi || _yAngle >= _twoPi)
+                {
+                    _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y - _twoPi;
+                    _yAngle = _yAngle - _twoPi;
+                }*/
+            }
+            if (_playerSOC != null)
+            {
+                _playerSOC.Transform.Translation.z = _xPos + 100;
+                _playerSOC.Transform.Translation.y = _yPos + 50;
+            }
+            //---------------------------------
+            /*if (_newRot > _twoPi && _yAngle > _newRot % _twoPi)
+            {
+                _yAngle += 0.001f;
+                //_yAngle += 0.5f * (float)Time.Instance.DeltaTime;
+            }
+            else if (_yAngle < _newRot % _twoPi)
+            {
+                _yAngle += 0.001f;
+                //_yAngle += 0.5f * (float)Time.Instance.DeltaTime;
+            }*/
+            if ((_yAngle < _newRot && _newRot < _twoPi) || (_yAngle < _newRot - _twoPi && _newRot > _twoPi))
+            {
+                if (_yAngle + 0.001f > _twoPi)
+                {
+                    _yAngle = (_yAngle + 0.001f) - _twoPi;
+                }
+                else
+                {
+                    _yAngle = (_yAngle + 0.001f);
+                }
+            }
+            else
+            {
+                if (_newRot > _twoPi)
+                {
+                    _yAngle = _newRot - _twoPi;
+                }
+                else
+                {
+                    _yAngle = _newRot;
+                }
+                if (_currentLane + 1 >= _lanesArray)
+                {
+                    _currentLane = _currentLane - _lanesArray;
+                }
+                else
+                {
+                    _currentLane = _currentLane + 1;
+                }
+                //_currentLane = (((_currentLane + 1) % _lanesArray) + _lanesArray) % _lanesArray;
+                _gameState = GameState.InGame;
+            }
+
+
+            if (_levelSOC != null)
+            {
+                _levelSOC.Transform.Rotation.y = _yAngle;
+            }
+            _levelSR.Render(RC);
+            _playerSR.Render(RC);
+           
+            Present();
+        }
+
+        private void DoRotS() //Beim auf Null gehen bugts noch TODO
+        {
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
+            if (_levelSOC != null)
+            {/*
+                if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
+                {
+                    _levelSOC.Transform.Rotation.y = _twoPi - _levelSOC.Transform.Rotation.y;
+                    _yAngle = _twoPi - _yAngle;
+                }
+                if (_levelSOC.Transform.Rotation.y >= _twoPi || _yAngle >= _twoPi)
+                {
+                    _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y - _twoPi;
+                    _yAngle = _yAngle - _twoPi;
+                }*/
+            }
+            if (_playerSOC != null)
+            {
+                _playerSOC.Transform.Translation.z = _xPos + 100;
+                _playerSOC.Transform.Translation.y = _yPos + 50;
+            }
+            //---------------------------------
+           /* if (_newRot < 0 && ( _yAngle < _twoPi - _newRot || _yAngle == 0 ))
+            {
+                if (_yAngle - 0.5f*(float) Time.Instance.DeltaTime < 0)
+                {
+                    _yAngle = _twoPi - (_yAngle - 0.5f*(float) Time.Instance.DeltaTime);
+                }
+                else
+                {
+                    _yAngle = (_yAngle - 0.5f * (float)Time.Instance.DeltaTime);
+                }
+            }
+            else */
+            if ((_yAngle > _newRot && _newRot > 0) || (_yAngle > _twoPi - _newRot && _newRot < 0))
+            {
+                if (_yAngle - 0.001f < 0)
+                {
+                    _yAngle = _twoPi - (_yAngle - 0.001f);
+                }
+                else
+                {
+                    _yAngle = (_yAngle - 0.001f);
+                }
+            }
+            else
+            {
+                if (_newRot < 0)
+                {
+                    _yAngle = _twoPi - _newRot;
+                }
+                else
+                {
+                    _yAngle = _newRot;
+                }
+                if (_currentLane - 1 < 0)
+                {
+                    _currentLane = _currentLane + _lanesArray;
+                }
+                else
+                {
+                    _currentLane = _currentLane - 1;
+                }
+                _gameState = GameState.InGame;
+            }
+
+            if (_levelSOC != null)
+            {
+                _levelSOC.Transform.Rotation.y = _yAngle;
+            }
+            _levelSR.Render(RC);
+            _playerSR.Render(RC);
+
+            Present();
+        }
+
+
+        private void ChangeBeeRot(bool what, int dir)
+        {
+            if (what != _rotChanged || dir != 0)
             {
                 if (what == true)
                 {
