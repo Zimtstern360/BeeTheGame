@@ -9,6 +9,7 @@ using Fusee.Math;
 using Fusee.Serialization;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace Examples.BeeTheGame
 {
@@ -20,6 +21,10 @@ namespace Examples.BeeTheGame
         private float _xPos;
         private float _yPos;
         private bool _rotChanged = false;
+        private bool _groesse = false;
+        private bool _crash = false;
+        private bool _voll = false;
+        private int _punkte = 0;
 
         private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
         private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" };
@@ -31,10 +36,11 @@ namespace Examples.BeeTheGame
 
         private int _currentLane = 0;
 
+        //Automatische Erkennung der Bildschirmsuflösung
         private int _screenWidth = 800;
         private int _screenHeight = 600;
-        private int _screenWidthAspect = 1680;
-        private int _screenHeightAspect = 945;
+        private int _screenWidthAspect = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
+        private int _screenHeightAspect = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
 
         private float _twoPi = (float) Math.Round(MathHelper.TwoPi, 6);
 
@@ -59,11 +65,13 @@ namespace Examples.BeeTheGame
 
         public override void Init()
         {
+            // DENIZ
+
             _screenWidth = Screen.PrimaryScreen.Bounds.Width;
-            _screenWidthAspect = _screenWidthAspect/1680;
+            _screenWidthAspect = 1;
             _screenHeight = Screen.PrimaryScreen.Bounds.Height;
-            _screenHeightAspect = _screenHeight / 945;
-            SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0 + 2, 0);
+            _screenHeightAspect = 1;
+            SetWindowSize(_screenWidth, _screenHeight / 9 * 2, true, 0, 0);
 
             var seri = new Serializer();
 
@@ -125,7 +133,7 @@ namespace Examples.BeeTheGame
 
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
             _yPos = 100;
-            _xPos = 250;
+            _xPos = 150;
             _gameState = GameState.InGame;
         }
 
@@ -145,7 +153,7 @@ namespace Examples.BeeTheGame
             loadC4D(assetsStrings[assetsInt], randomLane, randomGrid, assetsContStrings[assetsInt]);
             _sOClist[randomLane][randomGrid].Transform.Scale = _sOClist[randomLane][randomGrid].Transform.Scale / 3;
             _sOClist[randomLane][randomGrid].Transform.Translation.x = -25;
-            _sOClist[randomLane][randomGrid].Transform.Translation.y = 53; //Höhe?
+            _sOClist[randomLane][randomGrid].Transform.Translation.y = 45; //Höhe?//ok?
             _sOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
             _sOClist[randomLane][randomGrid].Transform.Rotation.y = 90;
         }
@@ -206,11 +214,24 @@ namespace Examples.BeeTheGame
         private void RunGame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 160 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 145 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
+            RC.ModelView = float4x4.LookAt( 150, 160, 800, 0, 145, 800, 0, 1, 0);
+
             /*if (_levelSOC != null && (_levelSOC.Transform.Rotation.y >= _twoPi || _levelSOC.Transform.Rotation.y < 0))
             {
                 _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y % _twoPi;
             }*/
+
+
+            if (Control.MousePosition.Y > _screenHeight / 9 * 2)
+            {
+
+                SetWindowSize(0, 0, true, 0, 0);
+            }
+            else
+            {
+                SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+            }
+
             if (_playerSOC != null)
             {
                 _playerSOC.Transform.Translation.z = _xPos;
@@ -248,6 +269,110 @@ namespace Examples.BeeTheGame
                 _newRot = (float) Math.Round(_yAngle - (_twoPi / _lanesArray),6);
                 _gameState = GameState.RotatingS;
             }
+            if (Input.Instance.IsKeyDown(KeyCodes.E))
+            {
+                if (_playerSOC.Transform.Translation.z > 50 && _playerSOC.Transform.Translation.z < 80)
+                {                    
+                    if (_punkte > 0)
+                    {
+                        _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x / 1.1f;
+                        _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y / 1.1f;
+                        _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z / 1.1f;
+                        _groesse = false;
+                        _punkte = _punkte - 1;
+                    }
+                    if (_punkte < 0) 
+                    { 
+                        _punkte = 0;
+                        _voll = false;
+                    }
+                    
+                }
+            }
+
+            if (Input.Instance.IsKeyDown(KeyCodes.C))
+            {
+                if (_sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] != null)
+                {
+                    _crash = true;
+                    if (_punkte == 5)
+                    {
+                        _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)].Transform.Scale.y = -5;
+                        _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] = null;
+                        //jetzt müsste der Spiler auf dem platz von ner Blume sein
+                        _voll = false;
+                    }
+                }
+                else
+                {
+
+                    _crash = false;
+                }
+
+                if (_crash)
+                {
+                    _groesse = false;
+                    if (_punkte < 5) 
+                    {
+                        if (_groesse == false && _punkte == 0)
+                        {
+                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
+                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
+                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
+                            _punkte = _punkte+1;
+                            _groesse = true;
+                        }
+                        if (_groesse == false && _punkte == 1)
+                        {
+                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
+                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
+                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
+                            _punkte = _punkte + 1;
+                            _groesse = true;
+                          
+                        }
+                        if (_groesse == false && _punkte == 2)
+                        {
+                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
+                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
+                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
+                            _punkte = _punkte + 1;
+                            _groesse = true;
+
+                        }
+                        if (_groesse == false && _punkte == 3)
+                        {
+                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
+                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
+                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
+                            _punkte = _punkte + 1;
+                            _groesse = true;
+
+                        }
+                        if (_groesse == false && _punkte == 4)
+                        {
+                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
+                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
+                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
+                            _punkte = _punkte + 1;
+                            _groesse = true;
+
+                        }
+                        if (_groesse == false && _punkte == 5)
+                        {
+                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
+                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
+                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
+                            _punkte = _punkte + 1;
+                            _groesse = true;
+                            _voll = true;
+
+                        }
+
+                    }
+                }
+            }
+
             if (Input.Instance.IsKey(KeyCodes.Right) || Input.Instance.IsKey(KeyCodes.Left) || Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Down))
             {
                 ChangeBeeRot(false, 1);
@@ -277,7 +402,7 @@ namespace Examples.BeeTheGame
         private void DoRotW()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
+            RC.ModelView = float4x4.LookAt(150 , 160 , 800 , 0, 145 , 800 , 0, 1, 0);
             /*if (_levelSOC != null)
             {
                 if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
@@ -296,6 +421,15 @@ namespace Examples.BeeTheGame
                 _playerSOC.Transform.Translation.z = _xPos;
                 _playerSOC.Transform.Translation.y = _yPos;
             }
+            if (Control.MousePosition.Y > _screenHeight / 9 * 2)
+            {
+
+                SetWindowSize(0, 0, true, 0, 0);
+            }
+            else
+            {
+                SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+            }
             //---------------------------------
             /*if (_newRot > _twoPi && _yAngle > _newRot % _twoPi)
             {
@@ -311,11 +445,11 @@ namespace Examples.BeeTheGame
             {
                 if (_yAngle + 0.001f > _twoPi)
                 {
-                    _yAngle = (_yAngle + 0.001f) - _twoPi;
+                    _yAngle = (_yAngle + 0.020f) - _twoPi;
                 }
                 else
                 {
-                    _yAngle = (_yAngle + 0.001f);
+                    _yAngle = (_yAngle + 0.020f);
                 }
             }
             else
@@ -356,7 +490,7 @@ namespace Examples.BeeTheGame
         private void DoRotS() //Beim auf Null gehen bugts noch TODO
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            RC.ModelView = float4x4.LookAt(150 * (_screenWidthAspect / _screenHeightAspect), 180 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 150 * _screenHeightAspect, 800 * _screenWidthAspect, 0, 1, 0);
+            RC.ModelView = float4x4.LookAt(150, 160, 800 , 0, 145 , 800 , 0, 1, 0);
             /*if (_levelSOC != null)
             {
                 if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
@@ -375,6 +509,15 @@ namespace Examples.BeeTheGame
                 _playerSOC.Transform.Translation.z = _xPos;
                 _playerSOC.Transform.Translation.y = _yPos;
             }
+            if (Control.MousePosition.Y > _screenHeight / 9 * 2)
+            {
+
+                SetWindowSize(0, 0, true, 0, 0);
+            }
+            else
+            {
+                SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+            }
             //---------------------------------
            /* if (_newRot < 0 && ( _yAngle < _twoPi - _newRot || _yAngle == 0 ))
             {
@@ -392,11 +535,11 @@ namespace Examples.BeeTheGame
             {
                 if (_yAngle - 0.001f < 0)
                 {
-                    _yAngle = _twoPi - (_yAngle - 0.001f);
+                    _yAngle = _twoPi - (_yAngle - 0.020f);
                 }
                 else
                 {
-                    _yAngle = (_yAngle - 0.001f);
+                    _yAngle = (_yAngle - 0.020f);
                 }
             }
             else
@@ -455,10 +598,10 @@ namespace Examples.BeeTheGame
         // is called when the window was resized
         public override void Resize()
         {
-            RC.Viewport(0, 0, Width, Height);
-            var aspectRatio = Width / (float)Height;
+            RC.Viewport(0, 0, _screenWidth, _screenHeight / 9 * 2);
+            var aspectRatio = _screenWidth / (float)_screenHeight / 9 * 2;
             //RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 280, 10000);
-            RC.Projection = float4x4.CreateOrthographic(Width, Height, 5, 100000);
+            RC.Projection = float4x4.CreateOrthographic((float)(_screenWidth * 1.2), _screenHeight / 9 * 2, 2, 100000);
         }
 
         public static void Main()
