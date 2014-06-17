@@ -33,6 +33,9 @@ namespace Examples.MasterFuseeTest
         private SceneRenderer[][] _sRlist;
         private SceneContainer[][] _scene;
        // private int allObjCount = 0;
+
+        //GUI Stuff
+        private GUIRender _guiRender;
         
         public override void Init()
         {
@@ -54,6 +57,8 @@ namespace Examples.MasterFuseeTest
             _playerSOC = FindByName("blume_blau_container", _playerSC.Children);
             _playerSOC.Transform.Scale = _playerSOC.Transform.Scale / 6;
             #endregion
+            //more GUI stuff
+            _guiRender = new GUIRender(RC);
 
             _sOClist = new SceneObjectContainer[_lanesArray][];
             _sRlist = new SceneRenderer[_lanesArray][];
@@ -195,6 +200,7 @@ namespace Examples.MasterFuseeTest
                 }
                 
             }
+            _guiRender.RenderIngame();
             Present();
         }
 
