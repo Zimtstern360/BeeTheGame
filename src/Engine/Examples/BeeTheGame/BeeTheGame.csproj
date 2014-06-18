@@ -123,6 +123,9 @@
     <Content Include="Assets\dummy.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\gamePaused.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\nectarBar.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

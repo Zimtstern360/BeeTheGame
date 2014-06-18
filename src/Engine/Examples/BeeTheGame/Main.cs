@@ -202,6 +202,7 @@ namespace Examples.BeeTheGame
             switch (_gameState)
             {
                 case GameState.Paused:
+                    DoPause();
                     break;
                 case GameState.InGame:
                     RunGame();
@@ -247,6 +248,11 @@ namespace Examples.BeeTheGame
             {
                 _playerSOC.Transform.Translation.z = _xPos;
                 _playerSOC.Transform.Translation.y = _yPos;
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.P))
+            {
+                _guiRender.RenderPause();
+                _gameState = GameState.Paused;
             }
 
             if (Input.Instance.IsKeyDown(KeyCodes.Space))
@@ -332,6 +338,47 @@ namespace Examples.BeeTheGame
             {
                 ChangeBeeRot(false, 1);
             }
+
+            _levelSR.Render(RC);
+            _stockSR.Render(RC);
+            _playerSR.Render(RC);
+            for (int lC = 0; lC < _lanesArray; lC++)
+            {
+                if (lC == _currentLane)
+                {
+                    for (int rCount = 0; rCount < _sRlist[lC].Length; rCount++)
+                    {
+                        if (_sRlist[lC][rCount] != null)
+                        {
+                            _sRlist[lC][rCount].Render(RC);
+                        }
+
+                    }
+                }
+
+            }
+            _guiRender.RenderIngame();
+            Present();
+        }
+
+        private void DoPause()
+        {
+            if (Control.MousePosition.Y > _screenHeight / 9 * 2)
+            {
+
+                SetWindowSize(0, 0, true, 0, 0);
+            }
+            else
+            {
+                SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.P))
+            {
+                _guiRender.DeletePause();
+                _gameState = GameState.InGame;
+            }
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
 
             _levelSR.Render(RC);
             _stockSR.Render(RC);

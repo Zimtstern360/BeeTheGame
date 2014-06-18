@@ -50,14 +50,19 @@ namespace Examples.BeeTheGame
             _guiHandler.Add(_guiImageBar);
             _guiHandler.Add(_guiImageBarText);
 
-
+            _guiImagePause = new GUIImage("Assets/gamePaused.png", 350, 40, 0, 500, 100);
         }
 
 
 
-        public void RenderMainMenue()
-        {
+        public void RenderPause()
+        {            
+            _guiHandler.Add(_guiImagePause);
+        }
 
+        public void DeletePause()
+        {
+            _guiHandler.Remove(_guiImagePause);
         }
 
         public void RenderIngame()
