@@ -22,7 +22,6 @@ namespace Examples.BeeTheGame
         private float _yPos;
         private bool _rotChanged = false;
         private bool _groesse = false;
-        private bool _crash = false;
         private bool _voll = false;
         private int _punkte = 0;
 
@@ -87,7 +86,7 @@ namespace Examples.BeeTheGame
             }
             _levelSR = new SceneRenderer(_levelSC, "Assets");
             _levelSOC = FindByName("landscape_container", _levelSC.Children);
-            _levelSOC.Transform.Scale = _levelSOC.Transform.Scale / 30;
+            //_levelSOC.Transform.Scale = _levelSOC.Transform.Scale / 30;
 
             using (var fileLevel = File.OpenRead(@"Assets/Bienenstock.fus"))
             {
@@ -292,6 +291,7 @@ namespace Examples.BeeTheGame
                         _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z / 1.1f;
                         _groesse = false;
                         _punkte = _punkte - 1;
+                        _guiRender.removeNectar(_punkte);
                     }
                     if (_punkte < 0)
                     {
@@ -306,81 +306,24 @@ namespace Examples.BeeTheGame
             {
                 if (_sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] != null)
                 {
-                    _crash = true;
-                    if (_punkte == 5)
-                    {
-                        _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)].Transform.Scale.y = -5;
-                        _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] = null;
-                        //jetzt müsste der Spiler auf dem platz von ner Blume sein
-                        _voll = false;
-                    }
-                }
-                else
-                {
-
-                    _crash = false;
-                }
-
-                if (_crash)
-                {
                     _groesse = false;
+
                     if (_punkte < 5)
                     {
-                        if (_groesse == false && _punkte == 0)
+                        if (_groesse == false)
                         {
+                            if (_punkte == 4)
+                            {
+                                _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)].Transform.Scale.y = -5;
+                                _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] = null;
+                            }
                             _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
                             _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
                             _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
-                            _punkte = _punkte + 1;
+                            _punkte += 1;
                             _groesse = true;
+                            _guiRender.addNectar(_punkte);
                         }
-                        if (_groesse == false && _punkte == 1)
-                        {
-                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
-                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
-                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
-                            _punkte = _punkte + 1;
-                            _groesse = true;
-
-                        }
-                        if (_groesse == false && _punkte == 2)
-                        {
-                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
-                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
-                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
-                            _punkte = _punkte + 1;
-                            _groesse = true;
-
-                        }
-                        if (_groesse == false && _punkte == 3)
-                        {
-                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
-                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
-                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
-                            _punkte = _punkte + 1;
-                            _groesse = true;
-
-                        }
-                        if (_groesse == false && _punkte == 4)
-                        {
-                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
-                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
-                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
-                            _punkte = _punkte + 1;
-                            _groesse = true;
-
-                        }
-                        if (_groesse == false && _punkte == 5)
-                        {
-                            _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
-                            _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
-                            _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
-                            _punkte = _punkte + 1;
-                            _groesse = true;
-                            _voll = true;
-
-                        }
-
                     }
                 }
             }

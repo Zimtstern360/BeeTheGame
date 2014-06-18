@@ -21,6 +21,13 @@ namespace Examples.BeeTheGame
         private GUIImage _guiImage;
         private GUIImage _guiImagePause;
 
+        private GUIImage _guiImageDummy;
+        private GUIImage _guiImageBar;
+        private GUIImage _guiImageBarText;
+
+        private GUIImage _guiImageContainer;
+        private GUIImage[] _guiImageContainerArray = new GUIImage[5];
+
         // Konstruktor.
         public GUIRender(RenderContext rc)
         {
@@ -36,10 +43,12 @@ namespace Examples.BeeTheGame
 
 
             //Image
-            _guiImage = new GUIImage("Assets/border.png", 0, 30, 0, 300, 30);
-            _guiImagePause = new GUIImage("Assets/pause.png", 0, 80, -1, 300, 30);
-            _guiHandler.Add(_guiImage);
-            _guiHandler.Add(_guiImagePause);
+            _guiImageDummy = new GUIImage("Assets/dummy.png", 0, 0, 0, 5, 5);
+            _guiImageBar = new GUIImage("Assets/nectarBar.png", 10, 10, -2, 250, 15);
+            _guiImageBarText = new GUIImage("Assets/nectarText.png", 10, 10, -1, 150, 15);
+            _guiHandler.Add(_guiImageDummy);
+            _guiHandler.Add(_guiImageBar);
+            _guiHandler.Add(_guiImageBarText);
 
 
         }
@@ -53,29 +62,24 @@ namespace Examples.BeeTheGame
 
         public void RenderIngame()
         {
-            
-            //RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _guiHandler.RenderGUI();
         }
 
-        /*public void Pause(Boolean _running)
+        public void addNectar(int _punktePos)
         {
-            if (_running == false)
-            {
-                _guiImagePause = new GUIImage("Assets/pause.png", 300, 80, 300, 30);
-                _guiHandler.Remove(_guiImage);
-                _guiHandler.Add(_guiImagePause);
-            }
-            if (_running == true)
-            {
-                RenderIngame();
-            }
+            //nectar blocks have to be added
+            _guiImageContainerArray[_punktePos-1] = new GUIImage("Assets/container.png", 120+(_punktePos*20), 10, 0, 10, 15);
+            _guiHandler.Add(_guiImageContainerArray[_punktePos-1]);
+        }
 
-        }*/
+        public void removeNectar(int _punktePos)
+        {
+            //nectar blocks have to be removed
+            _guiHandler.Remove(_guiImageContainerArray[_punktePos]);
+        }
 
         public void Refresh()
         {
-            _guiImage.Refresh();
             _guiHandler.Refresh();
         }
 
