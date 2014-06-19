@@ -270,14 +270,53 @@ namespace Examples.BeeTheGame
                     _currentLane = 0;
                 }
             }
-            if (Input.Instance.IsKey(KeyCodes.Up))
-                _yPos += 25.0f * (float)Time.Instance.DeltaTime;
-            if (Input.Instance.IsKey(KeyCodes.Down))
-                _yPos -= 25.0f * (float)Time.Instance.DeltaTime;
-            if (Input.Instance.IsKey(KeyCodes.Right))
-                _xPos += 100.0f * (float)Time.Instance.DeltaTime;
-            if (Input.Instance.IsKey(KeyCodes.Left))
-                _xPos -= 100.0f * (float)Time.Instance.DeltaTime;
+            if (Input.Instance.IsKey(KeyCodes.Up) && _yPos < Height)
+            {
+                if (_punkte > 2) 
+                {
+                    _yPos += 20.0f * (float)Time.Instance.DeltaTime;                     
+                }
+                else
+                {
+                    _yPos += 40.0f * (float)Time.Instance.DeltaTime; 
+                }
+            }
+
+            if (Input.Instance.IsKey(KeyCodes.Down) && _yPos > 70)
+            {
+                if (_punkte > 2)
+                {
+                    _yPos -= 20.0f * (float)Time.Instance.DeltaTime;
+                }
+                else
+                {
+                    _yPos -= 40.0f * (float)Time.Instance.DeltaTime;
+                }
+            }
+
+            if (Input.Instance.IsKey(KeyCodes.Right) && _xPos <= _screenWidth)
+            {
+                if (_punkte > 2)
+                {
+                    _xPos += 75.0f * (float)Time.Instance.DeltaTime;
+                }
+                else
+                {
+                    _xPos += 125.0f * (float)Time.Instance.DeltaTime;
+                }
+            }
+            if (Input.Instance.IsKey(KeyCodes.Left) && _xPos >= 60)
+            {
+                if (_punkte > 2)
+                {
+                    _xPos -= 75.0f * (float)Time.Instance.DeltaTime;
+                }
+                else
+                {
+                    _xPos -= 125.0f * (float)Time.Instance.DeltaTime;
+                }
+            }
+
             if (Input.Instance.IsKey(KeyCodes.W))
             {
                 ChangeBeeRot(true, 1);
