@@ -24,6 +24,7 @@ namespace Examples.BeeTheGame
         private bool _groesse = false;
         private bool _voll = false;
         private int _punkte = 0;
+        private float _aufloesung = 1.2f;
 
         private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
         private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" };
@@ -225,7 +226,7 @@ namespace Examples.BeeTheGame
         private void RunGame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            
+            //145
             RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
             
             /*if (_levelSOC != null && (_levelSOC.Transform.Rotation.y >= _twoPi || _levelSOC.Transform.Rotation.y < 0))
@@ -334,9 +335,13 @@ namespace Examples.BeeTheGame
                 }
             }
 
-            if (Input.Instance.IsKey(KeyCodes.Right) || Input.Instance.IsKey(KeyCodes.Left) || Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Down))
+            if (Input.Instance.IsKey(KeyCodes.Right) || Input.Instance.IsKey(KeyCodes.Right) && Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Right) && Input.Instance.IsKey(KeyCodes.Down))
             {
-                ChangeBeeRot(false, 1);
+                ChangeBeeRot(true, 3);
+            }
+            if (Input.Instance.IsKey(KeyCodes.Left) || Input.Instance.IsKey(KeyCodes.Left) && Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Left) && Input.Instance.IsKey(KeyCodes.Down))
+            {
+                ChangeBeeRot(true, 2);
             }
 
             _levelSR.Render(RC);
@@ -398,15 +403,17 @@ namespace Examples.BeeTheGame
                 }
 
             }
+            ChangeBeeRot(true, 3);
             _guiRender.RenderIngame();
             Present();
         }
 
         private void DoRotW()
         {
+            _guiRender.RenderIngame();
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
-            _guiRender.RenderIngame();
+            
             /*if (_levelSOC != null)
             {
                 if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
@@ -567,6 +574,7 @@ namespace Examples.BeeTheGame
                     _currentLane = _currentLane - 1;
                 }
                 _gameState = GameState.InGame;
+
             }
 
 
@@ -588,9 +596,26 @@ namespace Examples.BeeTheGame
         {
             if (what != _rotChanged || dir != 0)
             {
+
                 if (what == true)
                 {
-                    _playerSOC.Transform.Rotation.y = 1.2f * dir;
+                    if (dir == 1)
+                    {
+                        _playerSOC.Transform.Rotation.y = 1.2f * dir;
+                    }
+                    if (dir == -1)
+                    {
+                        _playerSOC.Transform.Rotation.y = 1.2f * dir;
+                    }
+                    if (dir == 2)
+                    {
+                        _playerSOC.Transform.Rotation.y = 3.14f;
+                    }
+                    if (dir == 3)
+                    {
+                        _playerSOC.Transform.Rotation.y = 0.0f;
+                    }
+
                 }
                 else
                 {
@@ -605,10 +630,29 @@ namespace Examples.BeeTheGame
         // is called when the window was resized
         public override void Resize()
         {
+
+            if (_screenWidth >= 1680)
+            {
+                _aufloesung = 1.0f;
+            }
+            if (_screenWidth == 1280)
+            {
+                _aufloesung = 1.3f;
+            }
+            if (_screenWidth ==1366)
+            {
+                _aufloesung = 1.2f;
+            }
+            if (_screenWidth <= 1024)
+            {
+                _aufloesung = 1.6f;
+            }
+
+
             RC.Viewport(0, 0, _screenWidth, _screenHeight / 9 * 2);
-            var aspectRatio = _screenWidth / (float)_screenHeight / 9 * 2;
+            //var aspectRatio = _screenWidth / (float)_screenHeight / 9 * 2;
             //RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 280, 10000);
-            RC.Projection = float4x4.CreateOrthographic((float)(_screenWidth * 1.2), _screenHeight / 9 * 2, 2, 100000);
+            RC.Projection = float4x4.CreateOrthographic((float)(_screenWidth * _aufloesung), _screenHeight / 9 * 2, 2, 100000);
             _guiRender.Refresh();
         }
 
