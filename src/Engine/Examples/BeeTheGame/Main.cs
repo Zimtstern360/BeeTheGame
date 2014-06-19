@@ -25,6 +25,10 @@ namespace Examples.BeeTheGame
         private bool _voll = false;
         private int _punkte = 0;
         private float _aufloesung = 1.2f;
+        private IAudioStream _ton_weg;
+        private IAudioStream _ton_sammeln;
+        private IAudioStream _ton_abgeben;
+        private IAudioStream _ton_fliegen;
 
         private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
         private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" };
@@ -65,19 +69,21 @@ namespace Examples.BeeTheGame
 
         //GUI Stuff
         private GUIRender _guiRender;
-
         public override void Init()
         {
              
 
             // DENIZ
-
+            _ton_sammeln = Audio.Instance.LoadFile("Assets/schmotzer1.mp3");
+            _ton_weg = Audio.Instance.LoadFile("Assets/Klick2.mp3");
+            _ton_abgeben = Audio.Instance.LoadFile("Assets/slash2.mp3");
+            _ton_fliegen = Audio.Instance.LoadFile("Assets/biene_LOOP2.mp3");
             _screenWidth = Screen.PrimaryScreen.Bounds.Width;
             _screenWidthAspect = 1;
             _screenHeight = Screen.PrimaryScreen.Bounds.Height;
             _screenHeightAspect = 1;
             SetWindowSize(_screenWidth, _screenHeight / 9 * 2, true, 0, 0);
-
+            
             var seri = new Serializer();
 
             #region LevelInit
@@ -203,9 +209,11 @@ namespace Examples.BeeTheGame
             switch (_gameState)
             {
                 case GameState.Paused:
+
                     DoPause();
                     break;
                 case GameState.InGame:
+                    _ton_fliegen.Stop();
                     RunGame();
                     break;
                 case GameState.RotatingW:
@@ -228,13 +236,10 @@ namespace Examples.BeeTheGame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             //145
             RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
-            
             /*if (_levelSOC != null && (_levelSOC.Transform.Rotation.y >= _twoPi || _levelSOC.Transform.Rotation.y < 0))
             {
                 _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y % _twoPi;
             }*/
-
-
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
 
@@ -279,6 +284,7 @@ namespace Examples.BeeTheGame
                 _yAngle = _levelSOC.Transform.Rotation.y;
                 _newRot = (float)Math.Round(_yAngle + (_twoPi / _lanesArray), 6);
                 _gameState = GameState.RotatingW;
+                _ton_fliegen.Play();
             }
             if (Input.Instance.IsKey(KeyCodes.S))
             {
@@ -286,6 +292,7 @@ namespace Examples.BeeTheGame
                 _yAngle = _levelSOC.Transform.Rotation.y;
                 _newRot = (float)Math.Round(_yAngle - (_twoPi / _lanesArray), 6);
                 _gameState = GameState.RotatingS;
+                _ton_fliegen.Play();
             }
             if (Input.Instance.IsKeyDown(KeyCodes.E))
             {
@@ -297,12 +304,14 @@ namespace Examples.BeeTheGame
                         _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y / 1.1f;
                         _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z / 1.1f;
                         _groesse = false;
+                        _ton_abgeben.Play();
                         _punkte = _punkte - 1;
                         _guiRender.removeNectar(_punkte);
                     }
                     if (_punkte < 0)
                     {
                         _punkte = 0;
+
                         _voll = false;
                     }
 
@@ -323,12 +332,14 @@ namespace Examples.BeeTheGame
                             {
                                 _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)].Transform.Scale.y = -5;
                                 _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] = null;
+                                _ton_weg.Play();
                             }
                             _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
                             _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y * 1.1f;
                             _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z * 1.1f;
                             _punkte += 1;
                             _groesse = true;
+                            _ton_sammeln.Play();
                             _guiRender.addNectar(_punkte);
                         }
                     }
@@ -343,7 +354,6 @@ namespace Examples.BeeTheGame
             {
                 ChangeBeeRot(true, 2);
             }
-
             _levelSR.Render(RC);
             _stockSR.Render(RC);
             _playerSR.Render(RC);
@@ -368,6 +378,7 @@ namespace Examples.BeeTheGame
 
         private void DoPause()
         {
+            Audio.Instance.Stop();
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
 
