@@ -22,7 +22,6 @@ namespace Examples.BeeTheGame
         private float _yPos;
         private bool _rotChanged = false;
         private bool _groesse = false;
-        private bool _voll = false;
         private int _punkte = 0;
         private float _aufloesung = 1.2f;
         private IAudioStream _ton_weg;
@@ -65,7 +64,7 @@ namespace Examples.BeeTheGame
         private SceneObjectContainer[][] _sOClist;
         private SceneRenderer[][] _sRlist;
         private SceneContainer[][] _scene;
-        // private int allObjCount = 0;
+        private int[] _objCountOnLane;
 
         //GUI Stuff
         private GUIRender _guiRender;
@@ -136,13 +135,18 @@ namespace Examples.BeeTheGame
             {
                 _scene[c3] = new SceneContainer[_arrayLength];
             }
+
+            _objCountOnLane = new int[_lanesArray];
+            for (int c4 = 0; c4 < _objCountOnLane.Length; c4++)
+            {
+                _objCountOnLane[c4] = 0;
+            }
             #endregion
 
             for (int aCount = 0; aCount < 15; aCount++)
             {
                 SpawnFlower();
             }
-
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
             _yPos = 100;
             _xPos = 150;
@@ -172,6 +176,7 @@ namespace Examples.BeeTheGame
             _sOClist[randomLane][randomGrid].Transform.Translation.y = 45; //Höhe?//ok?
             _sOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
             _sOClist[randomLane][randomGrid].Transform.Rotation.y = 90;
+            _objCountOnLane[randomLane] += 1;
         }
 
         private void loadC4D(string name, int lane, int place, string childName)
@@ -317,7 +322,7 @@ namespace Examples.BeeTheGame
                 }
             }
 
-            if (Input.Instance.IsKey(KeyCodes.W))
+            if (Input.Instance.IsKey(KeyCodes.W) && _objCountOnLane[_currentLane] == 0)
             {
                 ChangeBeeRot(true, 1);
                 _yAngle = _levelSOC.Transform.Rotation.y;
@@ -325,7 +330,7 @@ namespace Examples.BeeTheGame
                 _gameState = GameState.RotatingW;
                 _ton_fliegen.Play();
             }
-            if (Input.Instance.IsKey(KeyCodes.S))
+            if (Input.Instance.IsKey(KeyCodes.S) && _objCountOnLane[_currentLane] == 0)
             {
                 ChangeBeeRot(true, -1);
                 _yAngle = _levelSOC.Transform.Rotation.y;
@@ -347,13 +352,6 @@ namespace Examples.BeeTheGame
                         _punkte = _punkte - 1;
                         _guiRender.removeNectar(_punkte);
                     }
-                    if (_punkte < 0)
-                    {
-                        _punkte = 0;
-
-                        _voll = false;
-                    }
-
                 }
             }
 
@@ -371,6 +369,8 @@ namespace Examples.BeeTheGame
                             {
                                 _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)].Transform.Scale.y = -5;
                                 _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] = null;
+                                SpawnFlower();
+                                _objCountOnLane[_currentLane] -= 1;
                                 _ton_weg.Play();
                             }
                             _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x * 1.1f;
@@ -418,6 +418,10 @@ namespace Examples.BeeTheGame
         private void DoPause()
         {
             Audio.Instance.Stop();
+            /*_ton_sammeln.Stop();
+            _ton_weg.Stop();
+            _ton_abgeben.Stop();
+            _ton_fliegen.Stop();*/
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
 
@@ -676,6 +680,7 @@ namespace Examples.BeeTheGame
             }
             return;
         }
+
 
         // is called when the window was resized
         public override void Resize()
