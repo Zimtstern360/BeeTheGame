@@ -277,9 +277,9 @@ namespace Examples.BeeTheGame
             }
             if (Input.Instance.IsKey(KeyCodes.Up) && _yPos < Height)
             {
-                if (_punkte > 2) 
+                if (_punkte > 0) 
                 {
-                    _yPos += 20.0f * (float)Time.Instance.DeltaTime;                     
+                    _yPos += (40.0f - (20.0f*_punkte/5)) * (float)Time.Instance.DeltaTime;                     
                 }
                 else
                 {
@@ -289,9 +289,9 @@ namespace Examples.BeeTheGame
 
             if (Input.Instance.IsKey(KeyCodes.Down) && _yPos > 70)
             {
-                if (_punkte > 2)
+                if (_punkte > 0)
                 {
-                    _yPos -= 20.0f * (float)Time.Instance.DeltaTime;
+                    _yPos -= (40.0f - (20.0f * _punkte / 5)) * (float)Time.Instance.DeltaTime;
                 }
                 else
                 {
@@ -301,9 +301,9 @@ namespace Examples.BeeTheGame
 
             if (Input.Instance.IsKey(KeyCodes.Right) && _xPos <= _screenWidth)
             {
-                if (_punkte > 2)
+                if (_punkte > 0)
                 {
-                    _xPos += 75.0f * (float)Time.Instance.DeltaTime;
+                    _xPos += (125.0f - (50.0f * _punkte / 5)) * (float)Time.Instance.DeltaTime;
                 }
                 else
                 {
@@ -312,9 +312,9 @@ namespace Examples.BeeTheGame
             }
             if (Input.Instance.IsKey(KeyCodes.Left) && _xPos >= 60)
             {
-                if (_punkte > 2)
+                if (_punkte > 0)
                 {
-                    _xPos -= 75.0f * (float)Time.Instance.DeltaTime;
+                    _xPos -= (125.0f - (50.0f * _punkte / 5)) * (float)Time.Instance.DeltaTime;
                 }
                 else
                 {
@@ -340,7 +340,7 @@ namespace Examples.BeeTheGame
             }
             if (Input.Instance.IsKeyDown(KeyCodes.E))
             {
-                if (_playerSOC.Transform.Translation.z > 50 && _playerSOC.Transform.Translation.z < 80)
+                if (_playerSOC.Transform.Translation.z > 30 && _playerSOC.Transform.Translation.z < 90)
                 {
                     if (_punkte > 0)
                     {
@@ -357,7 +357,7 @@ namespace Examples.BeeTheGame
 
             if (Input.Instance.IsKeyDown(KeyCodes.C))
             {
-                if (_sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] != null)
+                if (_sOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z-80) / 1400) * _arrayLength)] != null)
                 {
                     _groesse = false;
 
@@ -367,8 +367,8 @@ namespace Examples.BeeTheGame
                         {
                             if (_punkte == 4)
                             {
-                                _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)].Transform.Scale.y = -5;
-                                _sOClist[_currentLane][(int)((_playerSOC.Transform.Translation.z / 1400) * _arrayLength)] = null;
+                                _sOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z - 80) / 1400) * _arrayLength)].Transform.Scale.y = -5;
+                                _sOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z - 80) / 1400) * _arrayLength)] = null;
                                 SpawnFlower();
                                 _objCountOnLane[_currentLane] -= 1;
                                 _ton_weg.Play();
