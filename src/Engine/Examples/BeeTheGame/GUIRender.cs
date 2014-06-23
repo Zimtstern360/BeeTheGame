@@ -13,11 +13,13 @@ namespace Examples.BeeTheGame
     class GUIRender : RenderCanvas
     {
         //enum GameState { running, paused };
+        private int _guiScore;
 
         private GUIHandler _guiHandler;
         private RenderContext RC;
-        private IFont _fontArial;
-        private GUIText _guiText;
+        private IFont _guiFontArial24;
+        private GUIText _guiArial24;
+        private GUIText _guiTextScore;
         private GUIImage _guiImage;
         private GUIImage _guiImagePause;
 
@@ -36,24 +38,32 @@ namespace Examples.BeeTheGame
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(rc);
 
-            //Text
-            /*_fontArial = rc.LoadFont("Assets/arial.ttf", 24);
-            _guiText = new GUIText("Spot all seven differences!", _fontArial, 200, 200, 10);
-            _guiText.TextColor = new float4(1, 1, 1, 1);*/
-
-
             //Image
             _guiImageDummy = new GUIImage("Assets/dummy.png", 0, 0, 0, 5, 5);
-            _guiImageBar = new GUIImage("Assets/nectarBar.png", 10, 10, -2, 250, 15);
-            _guiImageBarText = new GUIImage("Assets/nectarText.png", 10, 10, -1, 150, 15);
+            _guiImageBarText = new GUIImage("Assets/nectarCollected.png", 10, 10, -1, 153, 23);
+
+            //Text
+            _guiFontArial24 = RC.LoadFont("Assets/arial.ttf", 16);
+            _guiArial24 = new GUIText("Score: ", _guiFontArial24, 1200, 25);
+            _guiArial24.TextColor = new float4(1, 1, 1, 1);
+
+            _guiHandler.Add(_guiArial24);
             _guiHandler.Add(_guiImageDummy);
-            _guiHandler.Add(_guiImageBar);
             _guiHandler.Add(_guiImageBarText);
 
             _guiImagePause = new GUIImage("Assets/gamePaused.png", 350, 40, 0, 500, 100);
         }
 
+        public void SetGUIScore(int _score)
+        {
+            //get score, display upper right
+            _guiScore = _score;
 
+            _guiHandler.Remove(_guiTextScore);
+            _guiTextScore = new GUIText(" " + _guiScore, _guiFontArial24, 1245, 25);
+            _guiTextScore.TextColor = new float4(1, 1, 1, 1);
+            _guiHandler.Add(_guiTextScore);
+        }
 
         public void RenderPause()
         {            
@@ -73,7 +83,7 @@ namespace Examples.BeeTheGame
         public void addNectar(int _punktePos)
         {
             //nectar blocks have to be added
-            _guiImageContainerArray[_punktePos-1] = new GUIImage("Assets/container.png", 120+(_punktePos*20), 10, 0, 10, 15);
+            _guiImageContainerArray[_punktePos-1] = new GUIImage("Assets/honeycombContainer.png", 155+(_punktePos*20), 10, 0, 20, 20);
             _guiHandler.Add(_guiImageContainerArray[_punktePos-1]);
         }
 

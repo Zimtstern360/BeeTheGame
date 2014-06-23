@@ -352,6 +352,7 @@ namespace Examples.BeeTheGame
                         _ton_abgeben.Play();
                         _punkte = _punkte - 1;
                         _score += 1;
+                        _guiRender.SetGUIScore(_score);
                         _guiRender.removeNectar(_punkte);
                     }
                 }
@@ -713,10 +714,6 @@ namespace Examples.BeeTheGame
             _guiRender.Refresh();
         }
 
-        public int GetScore()
-        {
-            return _score;
-        }
 
         public static void Main()
         {
