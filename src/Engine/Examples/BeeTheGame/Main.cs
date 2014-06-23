@@ -28,6 +28,7 @@ namespace Examples.BeeTheGame
         private IAudioStream _ton_sammeln;
         private IAudioStream _ton_abgeben;
         private IAudioStream _ton_fliegen;
+        private int _score = 0;
 
         private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
         private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" };
@@ -322,7 +323,7 @@ namespace Examples.BeeTheGame
                 }
             }
 
-            if (Input.Instance.IsKey(KeyCodes.W) && _objCountOnLane[_currentLane] == 0)
+            if (Input.Instance.IsKey(KeyCodes.W)) // && _objCountOnLane[_currentLane] == 0
             {
                 ChangeBeeRot(true, 1);
                 _yAngle = _levelSOC.Transform.Rotation.y;
@@ -330,7 +331,7 @@ namespace Examples.BeeTheGame
                 _gameState = GameState.RotatingW;
                 _ton_fliegen.Play();
             }
-            if (Input.Instance.IsKey(KeyCodes.S) && _objCountOnLane[_currentLane] == 0)
+            if (Input.Instance.IsKey(KeyCodes.S)) // && _objCountOnLane[_currentLane] == 0
             {
                 ChangeBeeRot(true, -1);
                 _yAngle = _levelSOC.Transform.Rotation.y;
@@ -350,6 +351,7 @@ namespace Examples.BeeTheGame
                         _groesse = false;
                         _ton_abgeben.Play();
                         _punkte = _punkte - 1;
+                        _score += 1;
                         _guiRender.removeNectar(_punkte);
                     }
                 }
@@ -709,6 +711,11 @@ namespace Examples.BeeTheGame
             //RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 280, 10000);
             RC.Projection = float4x4.CreateOrthographic((float)(_screenWidth * _aufloesung), _screenHeight / 9 * 2, 2, 100000);
             _guiRender.Refresh();
+        }
+
+        public int GetScore()
+        {
+            return _score;
         }
 
         public static void Main()
