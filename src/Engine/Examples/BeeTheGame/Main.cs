@@ -74,10 +74,10 @@ namespace Examples.BeeTheGame
              
 
             // DENIZ
-            _ton_sammeln = Audio.Instance.LoadFile("Assets/schmotzer1.mp3");
-            _ton_weg = Audio.Instance.LoadFile("Assets/Klick2.mp3");
-            _ton_abgeben = Audio.Instance.LoadFile("Assets/slash2.mp3");
-            _ton_fliegen = Audio.Instance.LoadFile("Assets/biene_LOOP2.mp3");
+            _ton_sammeln = Audio.Instance.LoadFile("Assets/schmotzer1.mp3", true);
+            _ton_weg = Audio.Instance.LoadFile("Assets/Klick2.mp3", true);
+            _ton_abgeben = Audio.Instance.LoadFile("Assets/slash2.mp3", true);
+            _ton_fliegen = Audio.Instance.LoadFile("Assets/biene_LOOP2.mp3", true);
             _screenWidth = Screen.PrimaryScreen.Bounds.Width;
             _screenWidthAspect = 1;
             _screenHeight = Screen.PrimaryScreen.Bounds.Height;
