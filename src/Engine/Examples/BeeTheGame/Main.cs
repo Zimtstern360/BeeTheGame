@@ -13,7 +13,7 @@ using System.Threading;
 
 namespace Examples.BeeTheGame
 {
-    public enum GameState { Paused, InGame, RotatingW, RotatingS, GameOver, GameStart };
+    public enum GameState { Paused, InGame, RotatingW, RotatingS, GameOver, GameStart, GameHelp };
 
     public class BeeTheGame : RenderCanvas
     {
@@ -48,7 +48,7 @@ namespace Examples.BeeTheGame
 
         private float _twoPi = (float)Math.Round(MathHelper.TwoPi, 6);
 
-        private GameState _gameState;
+        public GameState _gameState;
 
         private SceneObjectContainer _levelSOC;
         private SceneRenderer _levelSR;
@@ -151,11 +151,12 @@ namespace Examples.BeeTheGame
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
             _yPos = 100;
             _xPos = 150;
-            _gameState = GameState.InGame;
+            _gameState = GameState.GameStart;
 
             //GUI Stuff
-            _guiRender = new GUIRender(RC);
-            
+            _guiRender = new GUIRender(RC, this);
+
+            _guiRender.StartMenue();
         }
 
         private void SpawnFlower()
@@ -215,7 +216,6 @@ namespace Examples.BeeTheGame
             switch (_gameState)
             {
                 case GameState.Paused:
-
                     DoPause();
                     break;
                 case GameState.InGame:
@@ -231,6 +231,10 @@ namespace Examples.BeeTheGame
                 case GameState.GameOver:
                     break;
                 case GameState.GameStart:
+                    DoStart();
+                    break;
+                case GameState.GameHelp:
+                    DoHelp();
                     break;
                 default:
                     return;
@@ -265,16 +269,6 @@ namespace Examples.BeeTheGame
             {
                 _guiRender.RenderPause();
                 _gameState = GameState.Paused;
-            }
-
-            if (Input.Instance.IsKeyDown(KeyCodes.Space))
-            {
-                if (_currentLane == 0)
-                    _currentLane = 1;
-                else
-                {
-                    _currentLane = 0;
-                }
             }
             if (Input.Instance.IsKey(KeyCodes.Up) && _yPos < Height)
             {
@@ -339,9 +333,9 @@ namespace Examples.BeeTheGame
                 _gameState = GameState.RotatingS;
                 _ton_fliegen.Play();
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.E))
+            if (Input.Instance.IsKeyDown(KeyCodes.Space) && _playerSOC.Transform.Translation.z <= 90)
             {
-                if (_playerSOC.Transform.Translation.z > 30 && _playerSOC.Transform.Translation.z < 90)
+                if (_playerSOC.Transform.Translation.z > 30)
                 {
                     if (_punkte > 0)
                     {
@@ -358,7 +352,7 @@ namespace Examples.BeeTheGame
                 }
             }
 
-            if (Input.Instance.IsKeyDown(KeyCodes.C))
+            if (Input.Instance.IsKeyDown(KeyCodes.Space) && _playerSOC.Transform.Translation.z >= 90)
             {
                 if (_sOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z-80) / 1400) * _arrayLength)] != null)
                 {
@@ -417,14 +411,70 @@ namespace Examples.BeeTheGame
             _guiRender.RenderIngame();
             Present();
         }
+        private void DoStart()
+        {
+            Audio.Instance.Stop();
+            if (Control.MousePosition.Y > _screenHeight / 9 * 2)
+            {
 
+                SetWindowSize(0, 0, true, 0, 0);
+            }
+            else
+            {
+                SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+            }
+            
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
+
+            _guiRender.RenderIngame();
+            Present();
+        }
+        private void DoHelp()
+        {
+            Audio.Instance.Stop();
+            if (Control.MousePosition.Y > _screenHeight / 9 * 2)
+            {
+
+                SetWindowSize(0, 0, true, 0, 0);
+            }
+            else
+            {
+                SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+            }
+            if (Input.Instance.IsKeyDown(KeyCodes.P))
+            {
+                _guiRender.DeletePause();
+                _gameState = GameState.InGame;
+            }
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
+
+            _levelSR.Render(RC);
+            _stockSR.Render(RC);
+            _playerSR.Render(RC);
+            for (int lC = 0; lC < _lanesArray; lC++)
+            {
+                if (lC == _currentLane)
+                {
+                    for (int rCount = 0; rCount < _sRlist[lC].Length; rCount++)
+                    {
+                        if (_sRlist[lC][rCount] != null)
+                        {
+                            _sRlist[lC][rCount].Render(RC);
+                        }
+
+                    }
+                }
+
+            }
+            ChangeBeeRot(true, 3);
+            _guiRender.RenderIngame();
+            Present();
+        }
         private void DoPause()
         {
             Audio.Instance.Stop();
-            /*_ton_sammeln.Stop();
-            _ton_weg.Stop();
-            _ton_abgeben.Stop();
-            _ton_fliegen.Stop();*/
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
 
@@ -718,6 +768,7 @@ namespace Examples.BeeTheGame
         public static void Main()
         {
             var app = new BeeTheGame();
+            
             app.Run();
         }
     }
