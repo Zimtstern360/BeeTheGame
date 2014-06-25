@@ -56,7 +56,7 @@ namespace Examples.BeeTheGame
 
             _guiImageStartBack = new GUIImage("Assets/background.png", 0, 0, 0, System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width, (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height/9)*2);
             _guiImageGameHelp = new GUIImage("Assets/gameHelp.png", 0, 0, 0, System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width, (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height/9)*2);
-            _guiImageStartBee = new GUIImage("Assets/beePlaceholder.png", 200, 0, 1, 192, 175);
+            _guiImageStartBee = new GUIImage("Assets/beePlaceholder.png", 200, 30, 1, 130, 118);
             _guiImageStartPlay = new GUIImage("Assets/play.png", (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width/2 - 300/2), 0, 2, 300, (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height/9)*2);
 
             _guiImageHelpButton = new GUIImage("Assets/helpButton.png", 10, 10, 2, 41, 50);
