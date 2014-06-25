@@ -53,7 +53,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\arial.ttf" />
+    <None Include="Assets\arial.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Assets\Bienenstock.fus">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
