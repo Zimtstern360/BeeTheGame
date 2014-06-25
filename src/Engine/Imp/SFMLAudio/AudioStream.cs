@@ -117,7 +117,8 @@ namespace Fusee.Engine
             }
 
             if (OutputBuffer != null)
-            {
+            {   
+
                 OutputBuffer.Dispose();
                 OutputBuffer = null;
             }
