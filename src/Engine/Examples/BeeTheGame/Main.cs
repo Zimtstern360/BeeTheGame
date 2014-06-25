@@ -67,6 +67,10 @@ namespace Examples.BeeTheGame
         private SceneContainer[][] _scene;
         private int[] _objCountOnLane;
 
+        private SceneObjectContainer[][] _enemySOClist;
+        private SceneRenderer[][] _enemySRlist;
+        private SceneContainer[][] _enemyScene;
+
         //GUI Stuff
         private GUIRender _guiRender;
         public override void Init()
@@ -104,13 +108,15 @@ namespace Examples.BeeTheGame
             #endregion
 
             #region PlayerInit
-            using (var filePlayer = File.OpenRead(@"Assets/blume_lila.fus"))
+            using (var filePlayer = File.OpenRead(@"Assets/spinne_final.fus"))
             {
                 _playerSC = seri.Deserialize(filePlayer, null, typeof(SceneContainer)) as SceneContainer;
             }
             _playerSR = new SceneRenderer(_playerSC, "Assets");
-            _playerSOC = FindByName("blume_lila_container", _playerSC.Children);
-            _playerSOC.Transform.Scale = _playerSOC.Transform.Scale / 5;
+            _playerSOC = FindByName("Null Body", _playerSC.Children);
+            _playerSOC.Transform.Scale = _playerSOC.Transform.Scale / 20;
+            _playerSOC.Transform.Rotation.z = _twoPi/4;
+            _playerSOC.Transform.Rotation.x = _twoPi/4;
 
             if (_playerSOC != null)
             {
@@ -137,6 +143,24 @@ namespace Examples.BeeTheGame
                 _scene[c3] = new SceneContainer[_arrayLength];
             }
 
+            //Enemy
+            _enemySOClist = new SceneObjectContainer[_lanesArray][];
+            _enemySRlist = new SceneRenderer[_lanesArray][];
+            _enemyScene = new SceneContainer[_lanesArray][];
+
+            for (int c1 = 0; c1 < _enemySOClist.Length; c1++)
+            {
+                _enemySOClist[c1] = new SceneObjectContainer[_arrayLength];
+            }
+            for (int c2 = 0; c2 < _enemySOClist.Length; c2++)
+            {
+                _enemySRlist[c2] = new SceneRenderer[_arrayLength];
+            }
+            for (int c3 = 0; c3 < _enemySOClist.Length; c3++)
+            {
+                _enemyScene[c3] = new SceneContainer[_arrayLength];
+            }
+
             _objCountOnLane = new int[_lanesArray];
             for (int c4 = 0; c4 < _objCountOnLane.Length; c4++)
             {
@@ -147,6 +171,11 @@ namespace Examples.BeeTheGame
             for (int aCount = 0; aCount < 15; aCount++)
             {
                 SpawnFlower();
+            }
+            //Enemy
+            for (int aCount = 0; aCount < _lanesArray + _lanesArray/2; aCount++)
+            {
+                SpawnEnemy();
             }
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
             _yPos = 100;
@@ -179,6 +208,38 @@ namespace Examples.BeeTheGame
             _sOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
             _sOClist[randomLane][randomGrid].Transform.Rotation.y = 90;
             _objCountOnLane[randomLane] += 1;
+        }
+
+        private void SpawnEnemy()
+        {
+            Random rnd = new Random();
+            int randomLane = rnd.Next(_lanesArray);
+            int randomGrid = rnd.Next(_arrayLength);
+            //Lane und Pos check
+            while (_enemySOClist[randomLane][randomGrid] != null)
+            {
+                randomLane = rnd.Next(_lanesArray - 1);
+                randomGrid = rnd.Next(_arrayLength - 1);
+            }
+            loadC4DEnemy("spinne_final", randomLane, randomGrid, "Null Body");
+            _enemySOClist[randomLane][randomGrid].Transform.Scale = _enemySOClist[randomLane][randomGrid].Transform.Scale / 15;
+            _enemySOClist[randomLane][randomGrid].Transform.Translation.x = -25;
+            _enemySOClist[randomLane][randomGrid].Transform.Translation.y = 145; //Höhe?//ok?
+            _enemySOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
+            _enemySOClist[randomLane][randomGrid].Transform.Rotation.z = _twoPi/4;
+            _enemySOClist[randomLane][randomGrid].Transform.Rotation.x = _twoPi/4;
+        }
+
+        private void loadC4DEnemy(string name, int lane, int place, string childName)
+        {
+            var ser = new Serializer();
+
+            using (var file = File.OpenRead(@"Assets/" + name + ".fus"))
+            {
+                _enemyScene[lane][place] = ser.Deserialize(file, null, typeof(SceneContainer)) as SceneContainer;
+            }
+            _enemySRlist[lane][place] = new SceneRenderer(_enemyScene[lane][place], "Assets");
+            _enemySOClist[lane][place] = FindByName(childName, _enemyScene[lane][place].Children);
         }
 
         private void loadC4D(string name, int lane, int place, string childName)
@@ -402,6 +463,14 @@ namespace Examples.BeeTheGame
                         if (_sRlist[lC][rCount] != null)
                         {
                             _sRlist[lC][rCount].Render(RC);
+                        }
+
+                    }
+                    for (int rCount = 0; rCount < _enemySRlist[lC].Length; rCount++)
+                    {
+                        if (_enemySRlist[lC][rCount] != null)
+                        {
+                            _enemySRlist[lC][rCount].Render(RC);
                         }
 
                     }
