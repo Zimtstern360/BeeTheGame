@@ -30,6 +30,8 @@ namespace Examples.BeeTheGame
         private IAudioStream _ton_fliegen;
         private IAudioStream _ton_hintergrund;
         private int _score = 0;
+        private int _grenze = 1;
+        private bool _bewegung = true;
 
         private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
         private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" };
@@ -228,11 +230,11 @@ namespace Examples.BeeTheGame
             }
             loadC4DEnemy("spinne_final", randomLane, randomGrid, "Null Body");
             _enemySOClist[randomLane][randomGrid].Transform.Scale = _enemySOClist[randomLane][randomGrid].Transform.Scale / 15;
-            _enemySOClist[randomLane][randomGrid].Transform.Translation.x = -25;
+            _enemySOClist[randomLane][randomGrid].Transform.Translation.x = 20;
             _enemySOClist[randomLane][randomGrid].Transform.Translation.y = 70 + rnd.Next(230); //Höhe?//ok?
             _enemySOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
             _enemySOClist[randomLane][randomGrid].Transform.Rotation.z = _twoPi/4;
-            _enemySOClist[randomLane][randomGrid].Transform.Rotation.x = _twoPi/4 + _twoPi/2;
+            _enemySOClist[randomLane][randomGrid].Transform.Rotation.x = _twoPi / 4 +_twoPi / 2;
         }
 
         private void loadC4DEnemy(string name, int lane, int place, string childName)
@@ -362,7 +364,7 @@ namespace Examples.BeeTheGame
                 _guiRender.RenderPause();
                 _gameState = GameState.Paused;
             }
-            if (Input.Instance.IsKey(KeyCodes.Up) && _yPos < Height)
+            if (Input.Instance.IsKey(KeyCodes.Up) && _yPos < Height+35)
             {
                 if (_punkte > 0) 
                 {
@@ -374,7 +376,7 @@ namespace Examples.BeeTheGame
                 }
             }
 
-            if (Input.Instance.IsKey(KeyCodes.Down) && _yPos > 70)
+            if (Input.Instance.IsKey(KeyCodes.Down) && _yPos > 90)
             {
                 if (_punkte > 0)
                 {
@@ -509,6 +511,23 @@ namespace Examples.BeeTheGame
                     {
                         if (_enemySRlist[lC][rCount] != null)
                         {
+                            if (_enemySOClist[lC][rCount].Transform.Translation.y == 205)
+                            {
+                                _bewegung = false;
+                            }
+                            if (_enemySOClist[lC][rCount].Transform.Translation.y == 80)
+                            {
+                                _bewegung = true;
+                            }
+
+                            if (_bewegung)
+                            {
+                                _enemySOClist[lC][rCount].Transform.Translation.y = _enemySOClist[lC][rCount].Transform.Translation.y + _grenze;
+                            }
+                            else
+                            {
+                                _enemySOClist[lC][rCount].Transform.Translation.y = _enemySOClist[lC][rCount].Transform.Translation.y - _grenze;
+                            }
                             _enemySRlist[lC][rCount].Render(RC);
                         }
 
