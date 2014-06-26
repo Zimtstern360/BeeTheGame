@@ -78,11 +78,11 @@ namespace Examples.BeeTheGame
         private GUIRender _guiRender;
         public override void Init()
         {
-            _ton_sammeln = Audio.Instance.LoadFile("Assets/schmotzer1.mp3",false);
+            _ton_sammeln = Audio.Instance.LoadFile("Assets/schmotzer1.mp3", true);
             _ton_weg = Audio.Instance.LoadFile("Assets/Klick2.mp3", true);
-            _ton_abgeben = Audio.Instance.LoadFile("Assets/slash1.mp3", false);
+            _ton_abgeben = Audio.Instance.LoadFile("Assets/slash1.mp3", true);
             _ton_fliegen = Audio.Instance.LoadFile("Assets/biene_LOOP2.mp3", true);
-            _ton_hintergrund = Audio.Instance.LoadFile("Assets/backgroundmusic.mp3",true);
+            _ton_hintergrund = Audio.Instance.LoadFile("Assets/backgroundmusic_tech.mp3",true);
 
             _screenWidth = Screen.PrimaryScreen.Bounds.Width;
             _screenWidthAspect = 1;
@@ -674,11 +674,11 @@ namespace Examples.BeeTheGame
             {
                 if (_yAngle + 0.001f > _twoPi)
                 {
-                    _yAngle = (_yAngle + 0.020f) - _twoPi;
+                    _yAngle = (_yAngle + 0.002f) - _twoPi;
                 }
                 else
                 {
-                    _yAngle = (_yAngle + 0.020f);
+                    _yAngle = (_yAngle + 0.002f);
                 }
             }
             else
@@ -740,11 +740,11 @@ namespace Examples.BeeTheGame
             {
                 if (_yAngle - 0.001f < 0)
                 {
-                    _yAngle = _twoPi - (_yAngle - 0.020f);
+                    _yAngle = _twoPi - (_yAngle - 0.002f);
                 }
                 else
                 {
-                    _yAngle = (_yAngle - 0.020f);
+                    _yAngle = (_yAngle - 0.002f);
                 }
             }
             else
