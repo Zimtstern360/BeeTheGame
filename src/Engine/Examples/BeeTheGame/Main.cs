@@ -31,7 +31,6 @@ namespace Examples.BeeTheGame
         private IAudioStream _ton_hintergrund;
         private int _score = 0;
         private int _grenze = 1;
-        private bool _bewegung = true;
 
         private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
         private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" };
@@ -73,6 +72,7 @@ namespace Examples.BeeTheGame
         private SceneObjectContainer[][] _enemySOClist;
         private SceneRenderer[][] _enemySRlist;
         private SceneContainer[][] _enemyScene;
+        private bool[] _enemyMove;
 
         //GUI Stuff
         private GUIRender _guiRender;
@@ -110,15 +110,15 @@ namespace Examples.BeeTheGame
             #endregion
 
             #region PlayerInit
-            using (var filePlayer = File.OpenRead(@"Assets/spinne_final.fus"))
+            using (var filePlayer = File.OpenRead(@"Assets/Biene.fus"))
             {
                 _playerSC = seri.Deserialize(filePlayer, null, typeof(SceneContainer)) as SceneContainer;
             }
             _playerSR = new SceneRenderer(_playerSC, "Assets");
-            _playerSOC = FindByName("Null Body", _playerSC.Children);
-            _playerSOC.Transform.Scale = _playerSOC.Transform.Scale / 20;
-            _playerSOC.Transform.Rotation.z = _twoPi/4;
-            _playerSOC.Transform.Rotation.x = _twoPi/4;
+            _playerSOC = FindByName("Biene", _playerSC.Children);
+            _playerSOC.Transform.Scale = _playerSOC.Transform.Scale / 25;
+            _playerSOC.Transform.Rotation.z = _twoPi/2;
+            _playerSOC.Transform.Rotation.x = _twoPi/2;
 
             if (_playerSOC != null)
             {
@@ -167,6 +167,11 @@ namespace Examples.BeeTheGame
             for (int c4 = 0; c4 < _objCountOnLane.Length; c4++)
             {
                 _objCountOnLane[c4] = 0;
+            }
+            _enemyMove = new bool[_arrayLength];
+            for (int c5 = 0; c5 < _enemyMove.Length; c5++)
+            {
+                _enemyMove[c5] = true;
             }
             #endregion
 
@@ -233,8 +238,8 @@ namespace Examples.BeeTheGame
             _enemySOClist[randomLane][randomGrid].Transform.Translation.x = 20;
             _enemySOClist[randomLane][randomGrid].Transform.Translation.y = 70 + rnd.Next(230); //Höhe?//ok?
             _enemySOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
-            _enemySOClist[randomLane][randomGrid].Transform.Rotation.z = _twoPi/4;
-            _enemySOClist[randomLane][randomGrid].Transform.Rotation.x = _twoPi / 4 +_twoPi / 2;
+            _enemySOClist[randomLane][randomGrid].Transform.Rotation.z = _twoPi/4 - _twoPi/2;
+            _enemySOClist[randomLane][randomGrid].Transform.Rotation.x = _twoPi / 4 + _twoPi / 2 + _twoPi / 12;
         }
 
         private void loadC4DEnemy(string name, int lane, int place, string childName)
@@ -315,10 +320,6 @@ namespace Examples.BeeTheGame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             //145
             RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
-            /*if (_levelSOC != null && (_levelSOC.Transform.Rotation.y >= _twoPi || _levelSOC.Transform.Rotation.y < 0))
-            {
-                _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y % _twoPi;
-            }*/
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
 
@@ -331,6 +332,8 @@ namespace Examples.BeeTheGame
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
                 _ton_hintergrund.Volume = 100;
+                _guiRender.DeletePause();
+                _gameState = GameState.InGame;
             }
 
             if (_playerSOC != null)
@@ -413,7 +416,7 @@ namespace Examples.BeeTheGame
 
             if (Input.Instance.IsKey(KeyCodes.W)) // && _objCountOnLane[_currentLane] == 0
             {
-                ChangeBeeRot(true, 1);
+                ChangeBeeRot(true, -1);
                 _yAngle = _levelSOC.Transform.Rotation.y;
                 _newRot = (float)Math.Round(_yAngle + (_twoPi / _lanesArray), 6);
                 _gameState = GameState.RotatingW;
@@ -421,7 +424,7 @@ namespace Examples.BeeTheGame
             }
             if (Input.Instance.IsKey(KeyCodes.S)) // && _objCountOnLane[_currentLane] == 0
             {
-                ChangeBeeRot(true, -1);
+                ChangeBeeRot(true, 1);
                 _yAngle = _levelSOC.Transform.Rotation.y;
                 _newRot = (float)Math.Round(_yAngle - (_twoPi / _lanesArray), 6);
                 _gameState = GameState.RotatingS;
@@ -511,16 +514,16 @@ namespace Examples.BeeTheGame
                     {
                         if (_enemySRlist[lC][rCount] != null)
                         {
-                            if (_enemySOClist[lC][rCount].Transform.Translation.y == 205)
+                            if (_enemySOClist[lC][rCount].Transform.Translation.y == 255)
                             {
-                                _bewegung = false;
+                                _enemyMove[rCount] = false;
                             }
                             if (_enemySOClist[lC][rCount].Transform.Translation.y == 80)
                             {
-                                _bewegung = true;
+                                _enemyMove[rCount] = true;
                             }
 
-                            if (_bewegung)
+                            if (_enemyMove[rCount])
                             {
                                 _enemySOClist[lC][rCount].Transform.Translation.y = _enemySOClist[lC][rCount].Transform.Translation.y + _grenze;
                             }
@@ -613,6 +616,7 @@ namespace Examples.BeeTheGame
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
                 _ton_hintergrund.Volume = 20;
+                
             }
             if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
@@ -651,19 +655,6 @@ namespace Examples.BeeTheGame
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
             
-            /*if (_levelSOC != null)
-            {
-                if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
-                {
-                    _levelSOC.Transform.Rotation.y = _twoPi - _levelSOC.Transform.Rotation.y;
-                    _yAngle = _twoPi - _yAngle;
-                }
-                if (_levelSOC.Transform.Rotation.y >= _twoPi || _yAngle >= _twoPi)
-                {
-                    _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y - _twoPi;
-                    _yAngle = _yAngle - _twoPi;
-                }
-            }*/
             if (_playerSOC != null)
             {
                 _playerSOC.Transform.Translation.z = _xPos;
@@ -678,17 +669,7 @@ namespace Examples.BeeTheGame
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
             }
-            //---------------------------------
-            /*if (_newRot > _twoPi && _yAngle > _newRot % _twoPi)
-            {
-                _yAngle += 0.001f;
-                //_yAngle += 0.5f * (float)Time.Instance.DeltaTime;
-            }
-            else if (_yAngle < _newRot % _twoPi)
-            {
-                _yAngle += 0.001f;
-                //_yAngle += 0.5f * (float)Time.Instance.DeltaTime;
-            }*/
+            
             if ((_yAngle < _newRot && _newRot < _twoPi) || (_yAngle < _newRot - _twoPi && _newRot > _twoPi))
             {
                 if (_yAngle + 0.001f > _twoPi)
@@ -718,7 +699,7 @@ namespace Examples.BeeTheGame
                 {
                     _currentLane = _currentLane + 1;
                 }
-                //_currentLane = (((_currentLane + 1) % _lanesArray) + _lanesArray) % _lanesArray;
+                NewLaneEnemyMove();
                 _gameState = GameState.InGame;
             }
 
@@ -736,24 +717,11 @@ namespace Examples.BeeTheGame
             Present();
         }
 
-        private void DoRotS() //Beim auf Null gehen bugts noch TODO
+        private void DoRotS()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _guiRender.RenderIngame();
             RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
-            /*if (_levelSOC != null)
-            {
-                if (_levelSOC.Transform.Rotation.y < 0 || _yAngle < 0)
-                {
-                    _levelSOC.Transform.Rotation.y = _twoPi - _levelSOC.Transform.Rotation.y;
-                    _yAngle = _twoPi - _yAngle;
-                }
-                if (_levelSOC.Transform.Rotation.y >= _twoPi || _yAngle >= _twoPi)
-                {
-                    _levelSOC.Transform.Rotation.y = _levelSOC.Transform.Rotation.y - _twoPi;
-                    _yAngle = _yAngle - _twoPi;
-                }
-            }*/
             if (_playerSOC != null)
             {
                 _playerSOC.Transform.Translation.z = _xPos;
@@ -768,19 +736,6 @@ namespace Examples.BeeTheGame
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
             }
-            //---------------------------------
-            /* if (_newRot < 0 && ( _yAngle < _twoPi - _newRot || _yAngle == 0 ))
-             {
-                 if (_yAngle - 0.5f*(float) Time.Instance.DeltaTime < 0)
-                 {
-                     _yAngle = _twoPi - (_yAngle - 0.5f*(float) Time.Instance.DeltaTime);
-                 }
-                 else
-                 {
-                     _yAngle = (_yAngle - 0.5f * (float)Time.Instance.DeltaTime);
-                 }
-             }
-             else */
             if ((_yAngle > _newRot && _newRot > 0) || (_yAngle > _twoPi - _newRot && _newRot < 0))
             {
                 if (_yAngle - 0.001f < 0)
@@ -810,6 +765,7 @@ namespace Examples.BeeTheGame
                 {
                     _currentLane = _currentLane - 1;
                 }
+                NewLaneEnemyMove();
                 _gameState = GameState.InGame;
 
             }
@@ -864,6 +820,13 @@ namespace Examples.BeeTheGame
             return;
         }
 
+        private void NewLaneEnemyMove()
+        {
+            for (int c5 = 0; c5 < _enemyMove.Length; c5++)
+            {
+                _enemyMove[c5] = true;
+            }
+        }
 
         // is called when the window was resized
         public override void Resize()
