@@ -28,6 +28,7 @@ namespace Examples.BeeTheGame
         private IAudioStream _ton_sammeln;
         private IAudioStream _ton_abgeben;
         private IAudioStream _ton_fliegen;
+        private IAudioStream _ton_hintergrund;
         private int _score = 0;
 
         private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
@@ -75,13 +76,12 @@ namespace Examples.BeeTheGame
         private GUIRender _guiRender;
         public override void Init()
         {
-             
-
-            // DENIZ
-            _ton_sammeln = Audio.Instance.LoadFile("Assets/schmotzer1.mp3", true);
+            _ton_sammeln = Audio.Instance.LoadFile("Assets/schmotzer1.mp3",false);
             _ton_weg = Audio.Instance.LoadFile("Assets/Klick2.mp3", true);
-            _ton_abgeben = Audio.Instance.LoadFile("Assets/slash2.mp3", true);
+            _ton_abgeben = Audio.Instance.LoadFile("Assets/slash1.mp3", false);
             _ton_fliegen = Audio.Instance.LoadFile("Assets/biene_LOOP2.mp3", true);
+            _ton_hintergrund = Audio.Instance.LoadFile("Assets/backgroundmusic.mp3",true);
+
             _screenWidth = Screen.PrimaryScreen.Bounds.Width;
             _screenWidthAspect = 1;
             _screenHeight = Screen.PrimaryScreen.Bounds.Height;
@@ -186,6 +186,11 @@ namespace Examples.BeeTheGame
             _guiRender = new GUIRender(RC, this);
 
             _guiRender.StartMenue();
+
+            _ton_hintergrund.Play(true);
+            _ton_fliegen.Volume = 100;
+            _ton_fliegen.Play(true);
+            _ton_fliegen.Volume = 0;
         }
 
         private void SpawnFlower()
@@ -280,13 +285,14 @@ namespace Examples.BeeTheGame
                     DoPause();
                     break;
                 case GameState.InGame:
-                    _ton_fliegen.Stop();
                     RunGame();
                     break;
                 case GameState.RotatingW:
+                    _ton_fliegen.Volume = 100;
                     DoRotW();
                     break;
                 case GameState.RotatingS:
+                    _ton_fliegen.Volume = 100;
                     DoRotS();
                     break;
                 case GameState.GameOver:
@@ -315,10 +321,14 @@ namespace Examples.BeeTheGame
             {
 
                 SetWindowSize(0, 0, true, 0, 0);
+                _ton_hintergrund.Volume = 0;
+                _guiRender.RenderPause();
+                _gameState = GameState.Paused;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+                _ton_hintergrund.Volume = 100;
             }
 
             if (_playerSOC != null)
@@ -415,6 +425,14 @@ namespace Examples.BeeTheGame
                 _gameState = GameState.RotatingS;
                 _ton_fliegen.Play();
             }
+            if (Input.Instance.IsKey(KeyCodes.Right) || Input.Instance.IsKey(KeyCodes.Left) || Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Down))
+            {
+                _ton_fliegen.Volume = 100;
+            }
+            else
+            {
+                _ton_fliegen.Volume = 0;
+            }
             if (Input.Instance.IsKeyDown(KeyCodes.Space) && _playerSOC.Transform.Translation.z <= 90)
             {
                 if (_playerSOC.Transform.Translation.z > 30)
@@ -503,15 +521,16 @@ namespace Examples.BeeTheGame
         }
         private void DoStart()
         {
-            Audio.Instance.Stop();
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
 
                 SetWindowSize(0, 0, true, 0, 0);
+                _ton_hintergrund.Volume = 0;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+                _ton_hintergrund.Volume = 100;
             }
             
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -522,15 +541,16 @@ namespace Examples.BeeTheGame
         }
         private void DoHelp()
         {
-            Audio.Instance.Stop();
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
 
                 SetWindowSize(0, 0, true, 0, 0);
+                _ton_hintergrund.Volume = 0;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+                _ton_hintergrund.Volume = 100;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
@@ -564,15 +584,16 @@ namespace Examples.BeeTheGame
         }
         private void DoPause()
         {
-            Audio.Instance.Stop();
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
 
                 SetWindowSize(0, 0, true, 0, 0);
+                _ton_hintergrund.Volume = 0;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+                _ton_hintergrund.Volume = 20;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
