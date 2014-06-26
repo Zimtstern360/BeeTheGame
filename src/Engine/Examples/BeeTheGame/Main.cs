@@ -191,8 +191,8 @@ namespace Examples.BeeTheGame
         private void SpawnFlower()
         {
             Random rnd = new Random();
-            int randomLane = rnd.Next(_lanesArray);
-            int randomGrid = rnd.Next(_arrayLength);
+            int randomLane = rnd.Next(_lanesArray-1);
+            int randomGrid = rnd.Next(_arrayLength-1);
             //Lane und Pos check
             while (_sOClist[randomLane][randomGrid] != null)
             {
@@ -213,8 +213,8 @@ namespace Examples.BeeTheGame
         private void SpawnEnemy()
         {
             Random rnd = new Random();
-            int randomLane = rnd.Next(_lanesArray);
-            int randomGrid = rnd.Next(_arrayLength);
+            int randomLane = rnd.Next(_lanesArray-1);
+            int randomGrid = rnd.Next(_arrayLength-1);
             //Lane und Pos check
             while (_enemySOClist[randomLane][randomGrid] != null)
             {
@@ -224,10 +224,10 @@ namespace Examples.BeeTheGame
             loadC4DEnemy("spinne_final", randomLane, randomGrid, "Null Body");
             _enemySOClist[randomLane][randomGrid].Transform.Scale = _enemySOClist[randomLane][randomGrid].Transform.Scale / 15;
             _enemySOClist[randomLane][randomGrid].Transform.Translation.x = -25;
-            _enemySOClist[randomLane][randomGrid].Transform.Translation.y = 145; //Höhe?//ok?
+            _enemySOClist[randomLane][randomGrid].Transform.Translation.y = 70 + rnd.Next(230); //Höhe?//ok?
             _enemySOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
             _enemySOClist[randomLane][randomGrid].Transform.Rotation.z = _twoPi/4;
-            _enemySOClist[randomLane][randomGrid].Transform.Rotation.x = _twoPi/4;
+            _enemySOClist[randomLane][randomGrid].Transform.Rotation.x = _twoPi/4 + _twoPi/2;
         }
 
         private void loadC4DEnemy(string name, int lane, int place, string childName)
@@ -325,6 +325,27 @@ namespace Examples.BeeTheGame
             {
                 _playerSOC.Transform.Translation.z = _xPos;
                 _playerSOC.Transform.Translation.y = _yPos;
+            }
+            if (_enemySOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z - 80) / 1400) * _arrayLength)] != null)
+            {
+                float enemyPosY = _enemySOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z - 80) / 1400) * _arrayLength)].Transform.Translation.y;
+                float enemyPosZ = _enemySOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z - 80) / 1400) * _arrayLength)].Transform.Translation.z;
+                float playerPosY = _playerSOC.Transform.Translation.y;
+                float playerPosZ = _playerSOC.Transform.Translation.z;
+                if (enemyPosY - 20.0f <= playerPosY && enemyPosY + 20.0f >= playerPosY && enemyPosZ - 20.0f <= playerPosZ && enemyPosZ + 20.0f >= playerPosZ)
+                {
+                    if(_punkte >0)
+                    {
+                        _punkte -= 1;
+                        _guiRender.removeNectar(_punkte);
+                        _playerSOC.Transform.Scale.x = _playerSOC.Transform.Scale.x / 1.1f;
+                        _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y / 1.1f;
+                        _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z / 1.1f;
+                        _groesse = false;
+                        _ton_abgeben.Play(); //vllt andrer Ton ToDo
+                    }
+                   
+                }
             }
             if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
@@ -651,7 +672,7 @@ namespace Examples.BeeTheGame
                 }
                 if (_currentLane + 1 >= _lanesArray)
                 {
-                    _currentLane = _currentLane - _lanesArray;
+                    _currentLane = (_currentLane + 1) - _lanesArray;
                 }
                 else
                 {
@@ -743,7 +764,7 @@ namespace Examples.BeeTheGame
                 }
                 if (_currentLane - 1 < 0)
                 {
-                    _currentLane = _currentLane + _lanesArray;
+                    _currentLane = (_currentLane - 1) + _lanesArray;
                 }
                 else
                 {
