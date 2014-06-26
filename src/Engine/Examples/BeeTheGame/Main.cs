@@ -321,10 +321,14 @@ namespace Examples.BeeTheGame
             {
 
                 SetWindowSize(0, 0, true, 0, 0);
+                _ton_hintergrund.Volume = 0;
+                _guiRender.RenderPause();
+                _gameState = GameState.Paused;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+                _ton_hintergrund.Volume = 100;
             }
 
             if (_playerSOC != null)
@@ -500,10 +504,12 @@ namespace Examples.BeeTheGame
             {
 
                 SetWindowSize(0, 0, true, 0, 0);
+                _ton_hintergrund.Volume = 0;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+                _ton_hintergrund.Volume = 100;
             }
             
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -518,10 +524,12 @@ namespace Examples.BeeTheGame
             {
 
                 SetWindowSize(0, 0, true, 0, 0);
+                _ton_hintergrund.Volume = 0;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+                _ton_hintergrund.Volume = 100;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
@@ -559,10 +567,12 @@ namespace Examples.BeeTheGame
             {
 
                 SetWindowSize(0, 0, true, 0, 0);
+                _ton_hintergrund.Volume = 0;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
+                _ton_hintergrund.Volume = 20;
             }
             if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
