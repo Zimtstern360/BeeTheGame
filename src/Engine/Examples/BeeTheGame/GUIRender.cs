@@ -61,7 +61,7 @@ namespace Examples.BeeTheGame
 
             _guiImageHelpButton = new GUIImage("Assets/helpButton.png", 10, 10, 2, 41, 50);
             _guiImageHelpOne = new GUIImage("Assets/helpOne.png", 100, 10, 1, 300, 129);
-            _guiImageHelpTwo = new GUIImage("Assets/helpTwo.png", 950, 20, 1, 300, 121);
+            _guiImageHelpTwo = new GUIImage("Assets/helpTwo.png", 950, 20, 1, 300, 130);
 
             //Text
             _guiFontArial24 = RC.LoadFont("Assets/arial.ttf", 16);

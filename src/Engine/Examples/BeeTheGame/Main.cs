@@ -674,11 +674,11 @@ namespace Examples.BeeTheGame
             {
                 if (_yAngle + 0.001f > _twoPi)
                 {
-                    _yAngle = (_yAngle + 0.002f) - _twoPi;
+                    _yAngle = (_yAngle + 0.02f) - _twoPi;
                 }
                 else
                 {
-                    _yAngle = (_yAngle + 0.002f);
+                    _yAngle = (_yAngle + 0.02f);
                 }
             }
             else
@@ -740,11 +740,11 @@ namespace Examples.BeeTheGame
             {
                 if (_yAngle - 0.001f < 0)
                 {
-                    _yAngle = _twoPi - (_yAngle - 0.002f);
+                    _yAngle = _twoPi - (_yAngle - 0.02f);
                 }
                 else
                 {
-                    _yAngle = (_yAngle - 0.002f);
+                    _yAngle = (_yAngle - 0.02f);
                 }
             }
             else
