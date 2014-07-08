@@ -17,9 +17,12 @@ namespace Examples.BeeTheGame
 
         private GUIHandler _guiHandler;
         private RenderContext RC;
+        //Font
         private IFont _guiFontArial24;
+        //Text
         private GUIText _guiArial24;
         private GUIText _guiTextScore;
+        //Bilder
         private GUIImage _guiImage;
         private GUIImage _guiImagePause;
         private GUIImage _guiImageDummy;
@@ -32,25 +35,25 @@ namespace Examples.BeeTheGame
         private GUIImage _guiImageHelpOne;
         private GUIImage _guiImageHelpTwo;
         private GUIImage _guiImageHelpButton;
-
+        //Buttons
         private GUIButton _guiButtonPlay;
         private GUIButton _guiButtonHelp;
-
+        //Bilderarray
         private GUIImage _guiImageContainer;
         private GUIImage[] _guiImageContainerArray = new GUIImage[5];
 
         private BeeTheGame _game;
 
-        // Konstruktor.
+        // Konstruktor
         public GUIRender(RenderContext rc, BeeTheGame thisGame)
         {
             RC = rc;
             _game = thisGame;
-            //Attach the GUIHandler to this Context
+            //GUIHandler an den Kontext anhaengen
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(rc);
 
-            //Image
+            //Bilder einbinden
             _guiImageDummy = new GUIImage("Assets/dummy.png", 0, 0, 0, 5, 5);
             _guiImageBarText = new GUIImage("Assets/nectarCollected.png", 10, 10, -1, 153, 23);
 
@@ -76,11 +79,12 @@ namespace Examples.BeeTheGame
             _guiButtonPlay.BorderWidth = 0;
 
             _guiButtonHelp = new GUIButton(10, 10, 1, 50, 50);
-
+            //Buttonfarbe setzen
             _guiButtonHelp.ButtonColor = new float4(0, 0, 0, 0);
             _guiButtonHelp.BorderColor = new float4(0, 0, 0, 1);
             _guiButtonHelp.BorderWidth = 0;
 
+            //an den Handler anhaengen
             _guiHandler.Add(_guiImageDummy);
             _guiHandler.Add(_guiImageBarText);
 
@@ -89,7 +93,7 @@ namespace Examples.BeeTheGame
 
         public void SetGUIScore(int _score)
         {
-            //get score, display upper right
+            //Punktestand holen und abbilden
             _guiScore = _score;
 
             _guiHandler.Remove(_guiTextScore);
@@ -101,6 +105,7 @@ namespace Examples.BeeTheGame
 
         public void StartMenue()
         {
+            //alles noetige fuer das Start Menue
             _guiButtonPlay.OnGUIButtonDown += OnPlayButtonDown;
             _guiButtonHelp.OnGUIButtonDown += OnHelpButtonDown;
 
@@ -116,6 +121,7 @@ namespace Examples.BeeTheGame
 
         private void OnPlayButtonDown(GUIButton sender, Fusee.Engine.MouseEventArgs mea)
         {
+            //entfernen nicht benoetigter GUI Elemente
             _guiHandler.Remove(_guiButtonPlay);
             _guiHandler.Remove(_guiImageHelpButton);
             _guiHandler.Remove(_guiButtonHelp);
@@ -125,21 +131,22 @@ namespace Examples.BeeTheGame
             _guiHandler.Remove(_guiImageGameHelp);
             _guiHandler.Remove(_guiImageHelpOne);
             _guiHandler.Remove(_guiImageHelpTwo);
-
+            //Starten des Spiels
             _game._gameState = GameState.InGame;
         }
 
         private void OnHelpButtonDown(GUIButton sender, Fusee.Engine.MouseEventArgs mea)
         {
+           
             _guiButtonPlay.OnGUIButtonDown += OnPlayButtonDown;
             _guiButtonPlay.OnGUIButtonDown += OnPlayButtonDown;
-
+            //entfernen nicht benoetigter GUI Elemente
             _guiHandler.Remove(_guiImageStartBack);
             _guiHandler.Remove(_guiImageStartBee);
             _guiHandler.Remove(_guiButtonHelp);
             _guiHandler.Remove(_guiTextScore);
             _guiHandler.Remove(_guiImageHelpButton);
-
+            //hinzufuegen der benoetigten GUI Elemente fuer Help Screen
             _guiHandler.Add(_guiImageGameHelp);
             _guiHandler.Add(_guiImageHelpOne);
             _guiHandler.Add(_guiImageHelpTwo);
@@ -150,29 +157,32 @@ namespace Examples.BeeTheGame
 
         public void RenderPause()
         {            
+            //Spiel wurde pausiert
             _guiHandler.Add(_guiImagePause);
         }
 
         public void DeletePause()
         {
+            //Spiel wird fortgesetzt
             _guiHandler.Remove(_guiImagePause);
         }
 
         public void RenderIngame()
         {
+            //die GUI rendern
             _guiHandler.RenderGUI();
         }
 
         public void addNectar(int _punktePos)
         {
-            //nectar blocks have to be added
+            //Nektar Icons anzeigen wenn Punkte erhoeht werden
             _guiImageContainerArray[_punktePos-1] = new GUIImage("Assets/honeycombContainer.png", 155+(_punktePos*20), 10, 0, 20, 20);
             _guiHandler.Add(_guiImageContainerArray[_punktePos-1]);
         }
 
         public void removeNectar(int _punktePos)
         {
-            //nectar blocks have to be removed
+            //Nektar Icons entfernen falls Punkte durch Hit heruntergezaehlt
             _guiHandler.Remove(_guiImageContainerArray[_punktePos]);
         }
 
