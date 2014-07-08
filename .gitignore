@@ -6,6 +6,7 @@ C4dApi/
 *.orig
 
 ##
+##
 ## .gitignore from https://github.com/github/gitignore/blob/master/CSharp.gitignore
 ##             and https://github.com/github/gitignore/blob/master/Global/MonoDevelop.gitignore
 ##
