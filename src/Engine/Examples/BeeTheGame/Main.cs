@@ -23,14 +23,14 @@ namespace Examples.BeeTheGame
         private bool _rotChanged = false; // Hat sich die Rotation des Spielers geändert? (Lanewechsel)
         private bool _groesse = false;
         private int _punkte = 0; // Anzahl des gesammelten Nektar (max 5)
-        private float _aufloesung = 1.2f;
-        private IAudioStream _ton_weg;
-        private IAudioStream _ton_sammeln;
+        private float _aufloesung = 1.2f; // Standard Auflösung,bestimmt die Breite des Spielfeldes
+        private IAudioStream _ton_weg; // Implementierte Sound
+        private IAudioStream _ton_sammeln; 
         private IAudioStream _ton_abgeben;
         private IAudioStream _ton_fliegen;
         private IAudioStream _ton_hintergrund;
         private int _score = 0; // Der gesammt Punktestand
-        private int _grenze = 1;
+        private int _grenze = 1; //
 
         private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" }; // Datei-Namen der .fus-Assets für die Blumen
         private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" }; // Container-Namen der Assets für die Blumen
@@ -43,47 +43,48 @@ namespace Examples.BeeTheGame
         private int _currentLane = 0; // Momentane Lane des Spielers
 
         //Automatische Erkennung der Bildschirmsuflösung
-        private int _screenWidth = 800;
-        private int _screenHeight = 600;
-        private int _screenWidthAspect = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
-        private int _screenHeightAspect = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
+        private int _screenWidth = 800; // Nomierte Auflösung bzw. bezugspunkt für Auflösung (Breite) 
+        private int _screenHeight = 600; // Nomierte Auflösung bzw. bezugspunkt für Auflösung (Höhe)
+        private int _screenWidthAspect = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width; // Aktuelle Auflösung (Breite)
+        private int _screenHeightAspect = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height; // Aktuelle Auflösung (Breite)
 
-        private float _twoPi = (float)Math.Round(MathHelper.TwoPi, 6);
+        private float _twoPi = (float)Math.Round(MathHelper.TwoPi, 6); // Wert für 2pi abgerundet auf 6 stellen um Vergleich zu erleichtern
 
-        public GameState _gameState;
+        public GameState _gameState; // Momentaner Spielzustand 
 
-        private SceneObjectContainer _levelSOC;
+        //Importierte 3D-Objekte (Level)
+        private SceneObjectContainer _levelSOC; 
         private SceneRenderer _levelSR;
         private SceneContainer _levelSC;
-
+        //Importierte 3D-Objekte (Bienenstock)
         private SceneObjectContainer _stockSOC;
         private SceneRenderer _stockSR;
         private SceneContainer _stockSC;
-
+        //Importierte 3D-Objekte (Spieler)
         private SceneObjectContainer _playerSOC;
         private SceneRenderer _playerSR;
         private SceneContainer _playerSC;
-
+        //Importierte 3D-Objekte (Blumen)
         private SceneObjectContainer[][] _sOClist;
         private SceneRenderer[][] _sRlist;
         private SceneContainer[][] _scene;
-        private int[] _objCountOnLane;
-
+        private int[] _objCountOnLane; // Anzahl der Blumen auf der Lane
+        //Importierte 3D-Objekte (Gegner)
         private SceneObjectContainer[][] _enemySOClist;
         private SceneRenderer[][] _enemySRlist;
         private SceneContainer[][] _enemyScene;
-        private bool[] _enemyMove;
+        private bool[] _enemyMove; // Bewegungszustand des Gegners
 
-        //GUI Stuff
-        private GUIRender _guiRender;
+        private GUIRender _guiRender; // GUI Renderer
         public override void Init()
         {
+            // Initialisierung der Sound-Dateien (.mp3)
             _ton_sammeln = Audio.Instance.LoadFile("Assets/schmotzer1.mp3", true);
             _ton_weg = Audio.Instance.LoadFile("Assets/Klick2.mp3", true);
             _ton_abgeben = Audio.Instance.LoadFile("Assets/slash1.mp3", true);
             _ton_fliegen = Audio.Instance.LoadFile("Assets/biene_LOOP2.mp3", true);
             _ton_hintergrund = Audio.Instance.LoadFile("Assets/backgroundmusic_tech.mp3",true);
-
+            // Initialisierung der Fenstergröße
             _screenWidth = Screen.PrimaryScreen.Bounds.Width;
             _screenWidthAspect = 1;
             _screenHeight = Screen.PrimaryScreen.Bounds.Height;
@@ -174,32 +175,33 @@ namespace Examples.BeeTheGame
                 _enemyMove[c5] = true;
             }
             #endregion
-
+           
+            // Erzeugung der Blumen auf den Lanes
             for (int aCount = 0; aCount < 15; aCount++)
             {
                 SpawnFlower();
             }
-            //Enemy
+            // Erzeugung der Gegner auf den Lanes
             for (int aCount = 0; aCount < _lanesArray + _lanesArray/2; aCount++)
             {
                 SpawnEnemy();
             }
+            
             RC.ClearColor = new float4(0.1f, 0.1f, 0.5f, 1);
             _yPos = 100;
             _xPos = 150;
-            _gameState = GameState.GameStart;
+            _gameState = GameState.GameStart; // Spiel auf Startbildschirm setzen
 
-            //GUI Stuff
             _guiRender = new GUIRender(RC, this);
+            _guiRender.StartMenue(); // Rendern des Startmenüs
 
-            _guiRender.StartMenue();
-
-            _ton_hintergrund.Play(true);
+            _ton_hintergrund.Play(true); // Abspielen der Hintergrundmusik und Lautstärke setzen
             _ton_fliegen.Volume = 100;
-            _ton_fliegen.Play(true);
+            _ton_fliegen.Play(true); // Abspielen des Flügelschlags und und Lautstärke setzen 
             _ton_fliegen.Volume = 0;
         }
 
+        // Erzeugt eine Blume auf zufälliger Lane an einer zufälligen Position 
         private void SpawnFlower()
         {
             Random rnd = new Random();
@@ -215,13 +217,14 @@ namespace Examples.BeeTheGame
             int assetsInt = rnd.Next(assetsStrings.Length);
             loadC4D(assetsStrings[assetsInt], randomLane, randomGrid, assetsContStrings[assetsInt]);
             _sOClist[randomLane][randomGrid].Transform.Scale = _sOClist[randomLane][randomGrid].Transform.Scale / 3;
-            _sOClist[randomLane][randomGrid].Transform.Translation.x = -25;
-            _sOClist[randomLane][randomGrid].Transform.Translation.y = 45; //Höhe?//ok?
+            _sOClist[randomLane][randomGrid].Transform.Translation.x = -25; // Tiefe
+            _sOClist[randomLane][randomGrid].Transform.Translation.y = 45; // Höhe
             _sOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
             _sOClist[randomLane][randomGrid].Transform.Rotation.y = 90;
             _objCountOnLane[randomLane] += 1;
         }
 
+        // Erzeugt eine Gegner auf zufälliger Lane an einer zufälligen Position mit zufälliger Höhe
         private void SpawnEnemy()
         {
             Random rnd = new Random();
@@ -235,13 +238,14 @@ namespace Examples.BeeTheGame
             }
             loadC4DEnemy("spinne_final", randomLane, randomGrid, "Null Body");
             _enemySOClist[randomLane][randomGrid].Transform.Scale = _enemySOClist[randomLane][randomGrid].Transform.Scale / 15;
-            _enemySOClist[randomLane][randomGrid].Transform.Translation.x = 20;
-            _enemySOClist[randomLane][randomGrid].Transform.Translation.y = 70 + rnd.Next(230); //Höhe?//ok?
+            _enemySOClist[randomLane][randomGrid].Transform.Translation.x = 20; // Tiefe
+            _enemySOClist[randomLane][randomGrid].Transform.Translation.y = 70 + rnd.Next(230); //Höhe
             _enemySOClist[randomLane][randomGrid].Transform.Translation.z = 1400 * (float)(randomGrid + 1) / _arrayLength;
             _enemySOClist[randomLane][randomGrid].Transform.Rotation.z = _twoPi/4 - _twoPi/2;
             _enemySOClist[randomLane][randomGrid].Transform.Rotation.x = _twoPi / 4 + _twoPi / 2 + _twoPi / 12;
         }
 
+        // Lädt eine Gegner aus .fus-Datei
         private void loadC4DEnemy(string name, int lane, int place, string childName)
         {
             var ser = new Serializer();
@@ -254,6 +258,7 @@ namespace Examples.BeeTheGame
             _enemySOClist[lane][place] = FindByName(childName, _enemyScene[lane][place].Children);
         }
 
+        // Lädt eine Blume aus .fus-Datei
         private void loadC4D(string name, int lane, int place, string childName)
         {
             var ser = new Serializer();
@@ -266,6 +271,7 @@ namespace Examples.BeeTheGame
             _sOClist[lane][place] = FindByName(childName, _scene[lane][place].Children);
         }
 
+        // Wird benötigt um 3D-Object anzusprechen
         public static SceneObjectContainer FindByName(string name, IEnumerable<SceneObjectContainer> list)
         {
             foreach (SceneObjectContainer soc in list)
@@ -285,7 +291,7 @@ namespace Examples.BeeTheGame
         // is called once a frame
         public override void RenderAFrame()
         {
-           
+            // Gamestate machine
             switch (_gameState)
             {
                 case GameState.Paused:
@@ -318,11 +324,10 @@ namespace Examples.BeeTheGame
         private void RunGame()
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            //145
             RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
+            // Wenn Maus das Fenster verlässt wird es zugeklappt und Ton abgestellt + Spiel pausiert
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
-
                 SetWindowSize(0, 0, true, 0, 0);
                 _ton_hintergrund.Volume = 0;
                 _guiRender.RenderPause();
@@ -335,12 +340,13 @@ namespace Examples.BeeTheGame
                 _guiRender.DeletePause();
                 _gameState = GameState.InGame;
             }
-
+            // Spieler Position wird aktuallisiert
             if (_playerSOC != null)
             {
                 _playerSOC.Transform.Translation.z = _xPos;
                 _playerSOC.Transform.Translation.y = _yPos;
             }
+            // Hit-Detection with Enemy
             if (_enemySOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z - 80) / 1400) * _arrayLength)] != null)
             {
                 float enemyPosY = _enemySOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z - 80) / 1400) * _arrayLength)].Transform.Translation.y;
@@ -357,12 +363,12 @@ namespace Examples.BeeTheGame
                         _playerSOC.Transform.Scale.y = _playerSOC.Transform.Scale.y / 1.1f;
                         _playerSOC.Transform.Scale.z = _playerSOC.Transform.Scale.z / 1.1f;
                         _groesse = false;
-                        _ton_abgeben.Play(); //vllt andrer Ton ToDo
+                        _ton_abgeben.Play();
                     }
                    
                 }
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.P))
+            if (Input.Instance.IsKeyDown(KeyCodes.P)) // Pausiert das Spiel
             {
                 _guiRender.RenderPause();
                 _gameState = GameState.Paused;
@@ -414,8 +420,8 @@ namespace Examples.BeeTheGame
                 }
             }
 
-            if (Input.Instance.IsKey(KeyCodes.W)) // && _objCountOnLane[_currentLane] == 0
-            {
+            if (Input.Instance.IsKey(KeyCodes.W)) // && _objCountOnLane[_currentLane] == 0 // Auskommentiertes sorgt für freien Lane-Wechsel
+            { 
                 ChangeBeeRot(true, -1);
                 _yAngle = _levelSOC.Transform.Rotation.y;
                 _newRot = (float)Math.Round(_yAngle + (_twoPi / _lanesArray), 6);
@@ -430,6 +436,7 @@ namespace Examples.BeeTheGame
                 _gameState = GameState.RotatingS;
                 _ton_fliegen.Play();
             }
+            // Lautstärke des Flügelschlag bei Bewegung des Spielers auf 100 setzten und anderenfalls auf 0 
             if (Input.Instance.IsKey(KeyCodes.Right) || Input.Instance.IsKey(KeyCodes.Left) || Input.Instance.IsKey(KeyCodes.Up) || Input.Instance.IsKey(KeyCodes.Down))
             {
                 _ton_fliegen.Volume = 100;
@@ -438,6 +445,7 @@ namespace Examples.BeeTheGame
             {
                 _ton_fliegen.Volume = 0;
             }
+            // Interaktion beim Ablegen des Nektars beim Bienenstock 
             if (Input.Instance.IsKeyDown(KeyCodes.Space) && _playerSOC.Transform.Translation.z <= 90)
             {
                 if (_playerSOC.Transform.Translation.z > 30)
@@ -456,13 +464,13 @@ namespace Examples.BeeTheGame
                     }
                 }
             }
-
+            // Interaktion beim Einsammeln des Nektars bei der Blume 
             if (Input.Instance.IsKeyDown(KeyCodes.Space) && _playerSOC.Transform.Translation.z >= 90)
             {
+                // Hit Detektion mit Blume
                 if (_sOClist[_currentLane][(int)(((_playerSOC.Transform.Translation.z-80) / 1400) * _arrayLength)] != null)
                 {
                     _groesse = false;
-
                     if (_punkte < 5)
                     {
                         if (_groesse == false)
@@ -495,9 +503,11 @@ namespace Examples.BeeTheGame
             {
                 ChangeBeeRot(true, 2);
             }
+            // Rendern der Basiselemente (Level,Bienenstock,Spieler)
             _levelSR.Render(RC);
             _stockSR.Render(RC);
             _playerSR.Render(RC);
+            // Rendern der Gegner und Blumen der momentanen Lane
             for (int lC = 0; lC < _lanesArray; lC++)
             {
                 if (lC == _currentLane)
@@ -508,12 +518,12 @@ namespace Examples.BeeTheGame
                         {
                             _sRlist[lC][rCount].Render(RC);
                         }
-
                     }
                     for (int rCount = 0; rCount < _enemySRlist[lC].Length; rCount++)
                     {
                         if (_enemySRlist[lC][rCount] != null)
                         {
+                            // Gegnerbewegung
                             if (_enemySOClist[lC][rCount].Transform.Translation.y == 255)
                             {
                                 _enemyMove[rCount] = false;
@@ -522,7 +532,6 @@ namespace Examples.BeeTheGame
                             {
                                 _enemyMove[rCount] = true;
                             }
-
                             if (_enemyMove[rCount])
                             {
                                 _enemySOClist[lC][rCount].Transform.Translation.y = _enemySOClist[lC][rCount].Transform.Translation.y + _grenze;
@@ -533,7 +542,6 @@ namespace Examples.BeeTheGame
                             }
                             _enemySRlist[lC][rCount].Render(RC);
                         }
-
                     }
                 }
 
@@ -542,10 +550,10 @@ namespace Examples.BeeTheGame
             Present();
         }
         private void DoStart()
-        {
+        { 
+            // Wenn Maus das Fenster verlässt wird es zugeklappt und Ton abgestellt
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
-
                 SetWindowSize(0, 0, true, 0, 0);
                 _ton_hintergrund.Volume = 0;
             }
@@ -554,18 +562,16 @@ namespace Examples.BeeTheGame
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
                 _ton_hintergrund.Volume = 100;
             }
-            
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             RC.ModelView = float4x4.LookAt(150, 160, 800, 0, 145, 800, 0, 1, 0);
-
             _guiRender.RenderIngame();
             Present();
         }
         private void DoHelp()
-        {
+        { 
+            // Wenn Maus das Fenster verlässt wird es zugeklappt und Ton abgestellt
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
-
                 SetWindowSize(0, 0, true, 0, 0);
                 _ton_hintergrund.Volume = 0;
             }
@@ -574,7 +580,7 @@ namespace Examples.BeeTheGame
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
                 _ton_hintergrund.Volume = 100;
             }
-            if (Input.Instance.IsKeyDown(KeyCodes.P))
+            if (Input.Instance.IsKeyDown(KeyCodes.P)) // Kehrt ins Spiel zurück
             {
                 _guiRender.DeletePause();
                 _gameState = GameState.InGame;
@@ -595,10 +601,8 @@ namespace Examples.BeeTheGame
                         {
                             _sRlist[lC][rCount].Render(RC);
                         }
-
                     }
                 }
-
             }
             ChangeBeeRot(true, 3);
             _guiRender.RenderIngame();
@@ -606,17 +610,16 @@ namespace Examples.BeeTheGame
         }
         private void DoPause()
         {
+            // Wenn Maus das Fenster verlässt wird es zugeklappt und Ton abgestellt
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
-
                 SetWindowSize(0, 0, true, 0, 0);
                 _ton_hintergrund.Volume = 0;
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
-                _ton_hintergrund.Volume = 20;
-                
+                _ton_hintergrund.Volume = 20;   
             }
             if (Input.Instance.IsKeyDown(KeyCodes.P))
             {
@@ -649,7 +652,7 @@ namespace Examples.BeeTheGame
             Present();
         }
 
-        private void DoRotW()
+        private void DoRotW() // Rotiert das Level vorwärts um gewissen Winkel (als Animationsersatz)
         {
             _guiRender.RenderIngame();
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -660,16 +663,16 @@ namespace Examples.BeeTheGame
                 _playerSOC.Transform.Translation.z = _xPos;
                 _playerSOC.Transform.Translation.y = _yPos;
             }
+            // Wenn Maus das Fenster verlässt wird es zugeklappt
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
-
                 SetWindowSize(0, 0, true, 0, 0);
             }
             else
             {
                 SetWindowSize(_screenWidth + 20, _screenHeight / 9 * 2, true, 0, 0);
             }
-            
+            // Winkelabfrage
             if ((_yAngle < _newRot && _newRot < _twoPi) || (_yAngle < _newRot - _twoPi && _newRot > _twoPi))
             {
                 if (_yAngle + 0.001f > _twoPi)
@@ -683,6 +686,7 @@ namespace Examples.BeeTheGame
             }
             else
             {
+                // Rotation
                 if (_newRot > _twoPi)
                 {
                     _yAngle = _newRot - _twoPi;
@@ -691,6 +695,7 @@ namespace Examples.BeeTheGame
                 {
                     _yAngle = _newRot;
                 }
+                // Setzen der neuen momentanen Lane
                 if (_currentLane + 1 >= _lanesArray)
                 {
                     _currentLane = (_currentLane + 1) - _lanesArray;
@@ -717,7 +722,7 @@ namespace Examples.BeeTheGame
             Present();
         }
 
-        private void DoRotS()
+        private void DoRotS() // Rotiert das Level rückwärts um gewissen Winkel (als Animationsersatz)
         {
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             _guiRender.RenderIngame();
@@ -727,9 +732,9 @@ namespace Examples.BeeTheGame
                 _playerSOC.Transform.Translation.z = _xPos;
                 _playerSOC.Transform.Translation.y = _yPos;
             }
+            // Wenn Maus das Fenster verlässt wird es zugeklappt
             if (Control.MousePosition.Y > _screenHeight / 9 * 2)
             {
-
                 SetWindowSize(0, 0, true, 0, 0);
             }
             else
@@ -785,11 +790,10 @@ namespace Examples.BeeTheGame
         }
 
 
-        private void ChangeBeeRot(bool what, int dir)
+        private void ChangeBeeRot(bool what, int dir) // Ändert die Rotation als Animationsersatz bis nächste Bewegung
         {
             if (what != _rotChanged || dir != 0)
             {
-
                 if (what == true)
                 {
                     if (dir == 1)
@@ -808,7 +812,6 @@ namespace Examples.BeeTheGame
                     {
                         _playerSOC.Transform.Rotation.y = 0.0f;
                     }
-
                 }
                 else
                 {
@@ -820,7 +823,7 @@ namespace Examples.BeeTheGame
             return;
         }
 
-        private void NewLaneEnemyMove()
+        private void NewLaneEnemyMove() // Initialsiert die Anfangsbewegung der Gegner
         {
             for (int c5 = 0; c5 < _enemyMove.Length; c5++)
             {
@@ -831,7 +834,7 @@ namespace Examples.BeeTheGame
         // is called when the window was resized
         public override void Resize()
         {
-
+            // Anpassung der Breite an die verschiedene Auflösungen (1680,1280,1366,1024)
             if (_screenWidth >= 1680)
             {
                 _aufloesung = 1.0f;
@@ -848,20 +851,16 @@ namespace Examples.BeeTheGame
             {
                 _aufloesung = 1.6f;
             }
-
-
+            // Anpassung der orthogonalen Ansicht an die verschiedenen Auflösungen
             RC.Viewport(0, 0, _screenWidth, _screenHeight / 9 * 2);
-            //var aspectRatio = _screenWidth / (float)_screenHeight / 9 * 2;
-            //RC.Projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 280, 10000);
             RC.Projection = float4x4.CreateOrthographic((float)(_screenWidth * _aufloesung), _screenHeight / 9 * 2, 2, 100000);
+            // Aktualisierung der GUI 
             _guiRender.Refresh();
         }
 
-
         public static void Main()
         {
-            var app = new BeeTheGame();
-            
+            var app = new BeeTheGame();            
             app.Run();
         }
     }
