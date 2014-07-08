@@ -13,34 +13,34 @@ using System.Threading;
 
 namespace Examples.BeeTheGame
 {
-    public enum GameState { Paused, InGame, RotatingW, RotatingS, GameOver, GameStart, GameHelp };
+    public enum GameState { Paused, InGame, RotatingW, RotatingS, GameOver, GameStart, GameHelp }; // Die verschiedenen Stati, die das Spiel haben kann
 
     public class BeeTheGame : RenderCanvas
     {
-        private float _yAngle;
-        private float _xPos;
-        private float _yPos;
-        private bool _rotChanged = false;
+        private float _yAngle; // Der Winkel des Levels
+        private float _xPos; // Die Position des Spielers: X
+        private float _yPos; // Die Position des Spielers: Y
+        private bool _rotChanged = false; // Hat sich die Rotation des Spielers geändert? (Lanewechsel)
         private bool _groesse = false;
-        private int _punkte = 0;
+        private int _punkte = 0; // Anzahl des gesammelten Nektar (max 5)
         private float _aufloesung = 1.2f;
         private IAudioStream _ton_weg;
         private IAudioStream _ton_sammeln;
         private IAudioStream _ton_abgeben;
         private IAudioStream _ton_fliegen;
         private IAudioStream _ton_hintergrund;
-        private int _score = 0;
+        private int _score = 0; // Der gesammt Punktestand
         private int _grenze = 1;
 
-        private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" };
-        private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" };
+        private String[] assetsStrings = { "blume_blau", "blume_gold", "blume_lila" }; // Datei-Namen der .fus-Assets für die Blumen
+        private String[] assetsContStrings = { "blume_blau_container", "blume_gold_container", "blume_lila_container" }; // Container-Namen der Assets für die Blumen
 
-        private float _newRot;
+        private float _newRot; // Den Winkel der das Level einnehmen soll beim Lanewechsel
 
-        private int _arrayLength = 10;
-        private int _lanesArray = 6;
+        private int _arrayLength = 10; // Anzahl der Grid-Position
+        private int _lanesArray = 6; // Anzahl der Lanes
 
-        private int _currentLane = 0;
+        private int _currentLane = 0; // Momentane Lane des Spielers
 
         //Automatische Erkennung der Bildschirmsuflösung
         private int _screenWidth = 800;
